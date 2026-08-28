@@ -15,6 +15,7 @@ import {
   type UsageLimit,
 } from '../domain/usage.js';
 import type { UsageController, UsageState } from '../services/usage-controller.js';
+import { setBoxLayoutVertical } from './compat.js';
 import { formatMessage, localizedError, translate as _ } from './localization.js';
 
 class UsageIndicatorImpl extends PanelMenu.Button {
@@ -42,7 +43,7 @@ class UsageIndicatorImpl extends PanelMenu.Button {
       style_class: 'system-status-icon claudeland-panel-icon',
     }));
     this.panelLabel = new St.Label({
-      text: 'Claude --',
+      text: formatMessage(_('Claude %s'), '--'),
       y_align: Clutter.ActorAlign.CENTER,
     });
     box.add_child(this.panelLabel);
@@ -61,16 +62,16 @@ class UsageIndicatorImpl extends PanelMenu.Button {
     this.popupMenu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
 
     this.loginItem = new PopupMenu.PopupMenuItem(_('Sign in / renew session'));
-    this.loginItem.connect('activate', () => {
+    this.loginItem.connectObject('activate', () => {
       try {
         this.controller.launchLogin();
       } catch (error) {
         Main.notifyError(
-          'Claudeland',
+          _('Claudeland'),
           _(error instanceof Error ? error.message : String(error)),
         );
       }
-    });
+    }, this);
     this.popupMenu.addMenuItem(this.loginItem);
 
     const refreshItem = new PopupMenu.PopupMenuItem(_('Refresh now'));
@@ -82,7 +83,7 @@ class UsageIndicatorImpl extends PanelMenu.Button {
     this.popupMenu.addMenuItem(refreshItem);
 
     const settingsItem = new PopupMenu.PopupMenuItem(_('Preferences'));
-    settingsItem.connect('activate', openPreferences);
+    settingsItem.connectObject('activate', openPreferences, this);
     this.popupMenu.addMenuItem(settingsItem);
 
     this.unsubscribe = controller.subscribe((state) => this.render(state));
@@ -100,7 +101,7 @@ class UsageIndicatorImpl extends PanelMenu.Button {
 
   private renderPanel(state: Readonly<UsageState>): void {
     if (!state.snapshot) {
-      this.panelLabel.text = state.loading ? 'Claude …' : 'Claude --';
+      this.panelLabel.text = formatMessage(_('Claude %s'), state.loading ? '…' : '--');
       return;
     }
 
@@ -161,7 +162,7 @@ class UsageIndicatorImpl extends PanelMenu.Button {
 // namespace; preserve the concrete constructor type across that type boundary.
 export const UsageIndicator = GObject.registerClass(
   UsageIndicatorImpl as any,
-) as typeof UsageIndicatorImpl;
+) as unknown as typeof UsageIndicatorImpl;
 
 function createLimitRow(limit: UsageLimit): PopupMenu.PopupBaseMenuItem {
   const item = new PopupMenu.PopupBaseMenuItem({
@@ -171,10 +172,10 @@ function createLimitRow(limit: UsageLimit): PopupMenu.PopupBaseMenuItem {
   item.add_style_class_name('claudeland-limit-item');
 
   const content = new St.BoxLayout({
-    vertical: true,
     x_expand: true,
     style_class: 'claudeland-limit-content',
   });
+  setBoxLayoutVertical(content);
   const header = new St.BoxLayout({ x_expand: true });
   header.add_child(new St.Label({
     text: localizedLimitLabel(limit, _),

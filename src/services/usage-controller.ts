@@ -19,10 +19,9 @@ type StateListener = (state: Readonly<UsageState>) => void;
 
 export class UsageController {
   private readonly listeners = new Set<StateListener>();
-  private readonly client = new ClaudeUsageClient();
-  private readonly auth = new ClaudeAuth();
+  private client: ClaudeUsageClient | null = new ClaudeUsageClient();
+  private auth: ClaudeAuth | null = new ClaudeAuth();
   private timeoutId: number | null = null;
-  private destroyed = false;
   private state: UsageState = {
     snapshot: null,
     loading: false,
@@ -45,7 +44,9 @@ export class UsageController {
   }
 
   async refresh(): Promise<void> {
-    if (this.destroyed || this.state.loading) {
+    const client = this.client;
+    const auth = this.auth;
+    if (!client || !auth || this.state.loading) {
       return;
     }
 
@@ -53,7 +54,10 @@ export class UsageController {
     let nextDelay = this.baseIntervalSeconds();
 
     try {
-      const authStatus = await this.auth.status();
+      const authStatus = await auth.status();
+      if (this.client !== client) {
+        return;
+      }
       if (!authStatus.installed) {
         throw new ClaudelandError(
           'claude-cli-missing',
@@ -67,10 +71,13 @@ export class UsageController {
         );
       }
 
-      const result = await this.client.fetch({
+      const result = await client.fetch({
         warningRemaining: this.settings.get_uint('warning-remaining'),
         criticalRemaining: this.settings.get_uint('critical-remaining'),
       });
+      if (this.client !== client) {
+        return;
+      }
       this.setState({
         snapshot: result.snapshot,
         planLabel: result.planLabel,
@@ -80,6 +87,9 @@ export class UsageController {
         errorCode: null,
       });
     } catch (error) {
+      if (this.client !== client) {
+        return;
+      }
       if (error instanceof ClaudelandError && error.code === 'rate-limited') {
         nextDelay = Math.max(nextDelay, error.retryAfterSeconds ?? nextDelay * 2);
       }
@@ -90,22 +100,28 @@ export class UsageController {
         errorCode: error instanceof ClaudelandError ? error.code : 'network-error',
       });
     } finally {
-      this.schedule(nextDelay);
+      if (this.client === client) {
+        this.schedule(nextDelay);
+      }
     }
   }
 
   launchLogin(): void {
-    this.auth.launchLogin();
+    this.auth?.launchLogin();
   }
 
   destroy(): void {
-    this.destroyed = true;
+    const client = this.client;
+    const auth = this.auth;
+    this.client = null;
+    this.auth = null;
     if (this.timeoutId !== null) {
-      GLib.source_remove(this.timeoutId);
+      GLib.Source.remove(this.timeoutId);
       this.timeoutId = null;
     }
     this.listeners.clear();
-    this.client.destroy();
+    auth?.destroy();
+    client?.destroy();
   }
 
   private setState(patch: Partial<UsageState>): void {
@@ -116,11 +132,12 @@ export class UsageController {
   }
 
   private schedule(seconds: number): void {
-    if (this.destroyed) {
+    if (!this.client) {
       return;
     }
     if (this.timeoutId !== null) {
-      GLib.source_remove(this.timeoutId);
+      GLib.Source.remove(this.timeoutId);
+      this.timeoutId = null;
     }
     this.timeoutId = GLib.timeout_add_seconds(
       GLib.PRIORITY_DEFAULT,

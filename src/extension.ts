@@ -15,21 +15,21 @@ export default class ClaudelandExtension extends Extension {
   private controller: UsageController | null = null;
   private indicator: InstanceType<typeof UsageIndicator> | null = null;
   private desktopCard: DesktopCard | null = null;
-  private settingSignalIds: number[] = [];
 
   enable(): void {
     this.settings = this.getSettings();
     this.controller = new UsageController(this.settings);
 
-    this.settingSignalIds = [
-      this.settings.connect('changed::show-panel', () => this.syncSurfaces()),
-      this.settings.connect('changed::show-desktop-widget', () => this.syncSurfaces()),
-      this.settings.connect('changed::desktop-position', () => this.recreateDesktopCard()),
-      this.settings.connect('changed::compact-panel', () => void this.controller?.refresh()),
-      this.settings.connect('changed::refresh-interval', () => void this.controller?.refresh()),
-      this.settings.connect('changed::warning-remaining', () => void this.controller?.refresh()),
-      this.settings.connect('changed::critical-remaining', () => void this.controller?.refresh()),
-    ];
+    this.settings.connectObject(
+      'changed::show-panel', () => this.syncSurfaces(),
+      'changed::show-desktop-widget', () => this.syncSurfaces(),
+      'changed::desktop-position', () => this.recreateDesktopCard(),
+      'changed::compact-panel', () => void this.controller?.refresh(),
+      'changed::refresh-interval', () => void this.controller?.refresh(),
+      'changed::warning-remaining', () => void this.controller?.refresh(),
+      'changed::critical-remaining', () => void this.controller?.refresh(),
+      this,
+    );
 
     this.syncSurfaces();
     this.controller.start();
@@ -43,12 +43,7 @@ export default class ClaudelandExtension extends Extension {
     this.controller?.destroy();
     this.controller = null;
 
-    if (this.settings) {
-      for (const signalId of this.settingSignalIds) {
-        this.settings.disconnect(signalId);
-      }
-    }
-    this.settingSignalIds = [];
+    this.settings?.disconnectObject(this);
     this.settings = null;
   }
 
@@ -80,7 +75,7 @@ export default class ClaudelandExtension extends Extension {
           'Claudeland could not create the desktop card',
         );
         Main.notifyError(
-          'Claudeland',
+          _('Claudeland'),
           _('The desktop card is unavailable on this GNOME version.'),
         );
       }

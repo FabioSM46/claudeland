@@ -1,6 +1,6 @@
 import Adw from 'gi://Adw';
 import Gio from 'gi://Gio';
-import Gtk from 'gi://Gtk?version=4.0';
+import Gtk from 'gi://Gtk';
 
 import {
   ExtensionPreferences,
@@ -10,10 +10,10 @@ import {
 const POSITIONS = ['top-right', 'top-left', 'bottom-right', 'bottom-left'] as const;
 
 export default class ClaudelandPreferences extends ExtensionPreferences {
-  fillPreferencesWindow(window: Adw.PreferencesWindow): void {
+  async fillPreferencesWindow(window: Adw.PreferencesWindow): Promise<void> {
     const settings = this.getSettings();
     const page = new Adw.PreferencesPage({
-      title: 'Claudeland',
+      title: _('Claudeland'),
       icon_name: 'network-transmit-receive-symbolic',
     });
     window.add(page);

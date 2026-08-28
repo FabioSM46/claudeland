@@ -51,16 +51,22 @@
 
 .claudeland-warning {
   color: #e5c07b;
-  background-color: #e5c07b;
 }
 
 .claudeland-critical {
   color: #e06c75;
-  background-color: #e06c75;
 }
 
 .claudeland-ok {
   color: #8ccf7e;
+}
+
+.claudeland-progress-fill.claudeland-warning {
+  background-color: #e5c07b;
+}
+
+.claudeland-progress-fill.claudeland-critical {
+  background-color: #e06c75;
 }
 
 .claudeland-desktop-card {

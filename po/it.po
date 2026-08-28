@@ -41,6 +41,9 @@ msgstr "Posizione della card"
 msgid "Choose where to show remaining Claude capacity."
 msgstr "Scegli dove mostrare la capacità Claude rimanente."
 
+msgid "Claude %s"
+msgstr "Claude %s"
+
 msgid "Claude account"
 msgstr "Account Claude"
 
@@ -52,6 +55,9 @@ msgstr "Claude Code non è installato o non è disponibile nel PATH."
 
 msgid "Claude plan"
 msgstr "Piano Claude"
+
+msgid "Claudeland"
+msgstr "Claudeland"
 
 msgid "Compact panel"
 msgstr "Pannello compatto"

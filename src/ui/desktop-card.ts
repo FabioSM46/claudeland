@@ -1,11 +1,13 @@
 import Clutter from 'gi://Clutter';
 import Gio from 'gi://Gio';
+import GLib from 'gi://GLib';
 import St from 'gi://St';
 
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 
 import { formatPercent, localizedLimitLabel } from '../domain/usage.js';
 import type { UsageController, UsageState } from '../services/usage-controller.js';
+import { setBoxLayoutVertical } from './compat.js';
 import { formatMessage, localizedError, translate as _ } from './localization.js';
 
 type LayoutManagerWithBackground = typeof Main.layoutManager & {
@@ -17,27 +19,27 @@ export class DesktopCard {
   private readonly title: St.Label;
   private readonly content: St.BoxLayout;
   private readonly unsubscribe: () => void;
-  private readonly monitorsChangedId: number;
+  private positionSourceId: number | null = null;
 
   constructor(
     controller: UsageController,
     private readonly settings: Gio.Settings,
   ) {
     this.actor = new St.BoxLayout({
-      vertical: true,
       reactive: false,
       can_focus: false,
       width: 300,
       style_class: 'claudeland-desktop-card',
     });
+    setBoxLayoutVertical(this.actor);
     this.title = new St.Label({
       text: _('Claude plan'),
       style_class: 'claudeland-desktop-title',
     });
     this.content = new St.BoxLayout({
-      vertical: true,
       style_class: 'claudeland-desktop-content',
     });
+    setBoxLayoutVertical(this.content);
     this.actor.add_child(this.title);
     this.actor.add_child(this.content);
 
@@ -46,15 +48,22 @@ export class DesktopCard {
       throw new Error('The GNOME Shell background group is unavailable');
     }
     layoutManager._backgroundGroup.add_child(this.actor);
-    this.position();
 
-    this.monitorsChangedId = Main.layoutManager.connect('monitors-changed', () => this.position());
+    Main.layoutManager.connectObject(
+      'monitors-changed',
+      () => this.position(),
+      this.actor,
+    );
     this.unsubscribe = controller.subscribe((state) => this.render(state));
   }
 
   destroy(): void {
     this.unsubscribe();
-    Main.layoutManager.disconnect(this.monitorsChangedId);
+    Main.layoutManager.disconnectObject(this.actor);
+    if (this.positionSourceId !== null) {
+      GLib.Source.remove(this.positionSourceId);
+      this.positionSourceId = null;
+    }
     this.actor.destroy();
   }
 
@@ -82,6 +91,7 @@ export class DesktopCard {
           : (state.error ? localizedError(state.errorCode, state.error) : _('Data unavailable')),
         style_class: 'claudeland-desktop-empty',
       }));
+      this.queuePosition();
       return;
     }
 
@@ -98,6 +108,18 @@ export class DesktopCard {
       }));
       this.content.add_child(row);
     }
+    this.queuePosition();
+  }
+
+  private queuePosition(): void {
+    if (this.positionSourceId !== null) {
+      return;
+    }
+    this.positionSourceId = GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, () => {
+      this.positionSourceId = null;
+      this.position();
+      return GLib.SOURCE_REMOVE;
+    });
   }
 
   private position(): void {
@@ -107,26 +129,37 @@ export class DesktopCard {
     }
     const margin = 28;
     const cardWidth = 300;
-    const cardHeight = Math.max(this.actor.height, 140);
+    const [, naturalHeight] = this.actor.get_preferred_height(cardWidth);
+    const cardHeight = Math.max(this.actor.height, naturalHeight, 140);
     const position = this.settings.get_string('desktop-position');
     const left = monitor.x + margin;
     const right = monitor.x + monitor.width - cardWidth - margin;
     const top = monitor.y + margin + Main.panel.height;
     const bottom = monitor.y + monitor.height - cardHeight - margin;
 
+    let x: number;
+    let y: number;
     switch (position) {
       case 'top-left':
-        this.actor.set_position(left, top);
+        x = left;
+        y = top;
         break;
       case 'bottom-left':
-        this.actor.set_position(left, bottom);
+        x = left;
+        y = bottom;
         break;
       case 'bottom-right':
-        this.actor.set_position(right, bottom);
+        x = right;
+        y = bottom;
         break;
       default:
-        this.actor.set_position(right, top);
+        x = right;
+        y = top;
         break;
+    }
+
+    if (this.actor.x !== x || this.actor.y !== y) {
+      this.actor.set_position(x, y);
     }
   }
 }

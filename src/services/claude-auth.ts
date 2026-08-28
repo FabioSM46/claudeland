@@ -17,6 +17,8 @@ interface RawAuthStatus {
 }
 
 export class ClaudeAuth {
+  private process: Gio.Subprocess | null = null;
+
   async status(): Promise<ClaudeAuthStatus> {
     if (!GLib.find_program_in_path('claude')) {
       return {
@@ -32,6 +34,7 @@ export class ClaudeAuth {
         ['claude', 'auth', 'status', '--json'],
         Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_SILENCE,
       );
+      this.process = process;
       const [, stdout] = await communicateUtf8(process);
       const parsed = JSON.parse(stdout ?? '{}') as RawAuthStatus;
       return {
@@ -48,6 +51,8 @@ export class ClaudeAuth {
         authMethod: null,
         subscriptionType: null,
       };
+    } finally {
+      this.process = null;
     }
   }
 
@@ -77,6 +82,11 @@ export class ClaudeAuth {
       'claude-cli-missing',
       'No compatible terminal was found to start Claude sign-in.',
     );
+  }
+
+  destroy(): void {
+    this.process?.force_exit();
+    this.process = null;
   }
 }
 

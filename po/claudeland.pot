@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Claudeland 0.1.0\n"
 "Report-Msgid-Bugs-To: https://github.com/FabioSM46/claudeland/issues\n"
-"POT-Creation-Date: 2026-08-28 15:30+0200\n"
+"POT-Creation-Date: 2026-08-28 21:46+0200\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -40,6 +40,9 @@ msgstr ""
 msgid "Choose where to show remaining Claude capacity."
 msgstr ""
 
+msgid "Claude %s"
+msgstr ""
+
 msgid "Claude account"
 msgstr ""
 
@@ -50,6 +53,9 @@ msgid "Claude Code is not installed or is not available in PATH."
 msgstr ""
 
 msgid "Claude plan"
+msgstr ""
+
+msgid "Claudeland"
 msgstr ""
 
 msgid "Compact panel"

@@ -51,6 +51,7 @@ order. No actor, signal, or GLib timer may survive `disable()`.
 
 ## Compatibility
 
-GNOME Shell code is compiled against GNOME 46 type definitions and currently
-declares only Shell 46 support. Each additional Shell release must be
-smoke-tested before publishing a release that claims compatibility.
+GNOME Shell code is compiled against GNOME 50 type definitions and supports
+Shell 46 and 50. Compatibility-sensitive code uses APIs available in both
+declared releases, and every declared release must be smoke-tested before
+publication.

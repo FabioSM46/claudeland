@@ -2,6 +2,7 @@
 
 Claudeland is a GNOME Shell extension for Ubuntu Wayland that keeps Claude plan
 capacity visible without placing an always-on-top application over your work.
+It is an independent project and is not affiliated with or endorsed by Anthropic.
 
 It displays remaining capacity for:
 
@@ -17,8 +18,9 @@ It displays remaining capacity for:
 
 ## Status
 
-The project is at `0.1.0` and currently targets GNOME Shell 46. The development
-and verification environment is Ubuntu with GNOME Shell 46 on Wayland.
+The project is at `0.1.0` and targets GNOME Shell 46 and 50. Compatibility is
+checked against GNOME Shell 50 type definitions, with runtime smoke tests on
+both declared Shell releases.
 
 ## Why a GNOME extension?
 
@@ -33,7 +35,7 @@ Claudeland therefore integrates with GNOME Shell directly:
 
 ## Requirements
 
-- Ubuntu or another GNOME distribution using GNOME Shell 46;
+- Ubuntu or another GNOME distribution using GNOME Shell 46 or 50;
 - Wayland or X11 (Wayland is the primary target);
 - Claude Code installed and available as `claude` in `PATH`;
 - a Claude subscription authenticated through Claude Code;

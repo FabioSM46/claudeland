@@ -1,9 +1,8 @@
 {
   "uuid": "claudeland@fabiosm46.dev",
-  "name": "Claudeland",
-  "description": "Claude plan usage in the GNOME panel and on the desktop",
-  "version": 1,
-  "shell-version": ["46"],
+  "name": "Claudeland: Claude Usage",
+  "description": "Monitor remaining Claude plan usage in the GNOME panel and an optional desktop card.\n\nShows the five-hour window, weekly limits, and dynamically discovered model limits. Requires Claude Code. Reads its local OAuth credential and sends it only to api.anthropic.com to retrieve usage. Unofficial and not affiliated with Anthropic.",
+  "shell-version": ["46", "50"],
   "gettext-domain": "claudeland",
   "settings-schema": "org.gnome.shell.extensions.claudeland",
   "url": "https://github.com/FabioSM46/claudeland"

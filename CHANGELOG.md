@@ -6,6 +6,27 @@ the project follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- GNOME Shell 50 compatibility metadata, type validation, and runtime smoke
+  testing while retaining GNOME Shell 46 support.
+
+### Changed
+
+- Align lifecycle, signal cleanup, imports, and actor orientation with current
+  GNOME Extensions review guidance.
+- Prepare a minimal extensions.gnome.org package without unnecessary compiled
+  schemas or unreachable JavaScript.
+- Expand extension metadata with Claude Code, OAuth credential, Anthropic
+  endpoint, and unofficial-project disclosures.
+
+### Fixed
+
+- Apply warning and critical colors to percentage text without painting its
+  background, while preserving the matching progress-bar colors.
+- Keep bottom-positioned desktop cards inside the monitor after their content
+  changes height.
+
 ## [0.1.0] - 2026-08-28
 
 ### Added

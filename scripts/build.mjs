@@ -12,6 +12,7 @@ await mkdir(resolve(dist, 'schemas'), { recursive: true });
 run('pnpm', ['exec', 'tsc', '-p', 'tsconfig.json']);
 
 await cp(resolve(root, 'metadata.json'), resolve(dist, 'metadata.json'));
+await cp(resolve(root, 'LICENSE'), resolve(dist, 'LICENSE'));
 await cp(resolve(root, 'stylesheet.css'), resolve(dist, 'stylesheet.css'));
 await cp(
   resolve(root, 'schemas/org.gnome.shell.extensions.claudeland.gschema.xml'),
