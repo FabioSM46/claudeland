@@ -1,0 +1,9 @@
+{
+  "uuid": "claudeland@fabiosm46.dev",
+  "name": "Claudeland",
+  "description": "Claude plan usage in the GNOME panel and on the desktop",
+  "version": 1,
+  "shell-version": ["46"],
+  "settings-schema": "org.gnome.shell.extensions.claudeland",
+  "url": "https://github.com/FabioSM46/claudeland"
+}
