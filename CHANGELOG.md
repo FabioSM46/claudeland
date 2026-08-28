@@ -6,6 +6,8 @@ the project follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.1.0] - 2026-08-28
+
 ### Added
 
 - Initial GNOME Shell extension architecture.
@@ -19,3 +21,6 @@ the project follows [Semantic Versioning](https://semver.org/).
 ### Fixed
 
 - Keep the usage popup open when selecting “Refresh now”.
+
+[Unreleased]: https://github.com/FabioSM46/claudeland/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/FabioSM46/claudeland/releases/tag/v0.1.0

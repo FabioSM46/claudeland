@@ -54,17 +54,20 @@ claude auth login --claudeai
 Claudeland never asks for browser cookies and does not save a second copy of
 your credential.
 
-## Install from source
+## Install the pre-release
 
-Prebuilt releases are not available yet. Clone the public repository, install
-the locked development dependencies, and install the extension for your user:
+Download these two assets from the
+[v0.1.0 pre-release](https://github.com/FabioSM46/claudeland/releases/tag/v0.1.0):
+
+- `claudeland@fabiosm46.dev.shell-extension.zip`;
+- `claudeland@fabiosm46.dev.shell-extension.zip.sha256`.
+
+In a terminal, change to the download directory, verify the archive, and
+install it for the current user:
 
 ```bash
-git clone https://github.com/FabioSM46/claudeland.git
-cd claudeland
-corepack enable
-pnpm install --frozen-lockfile
-pnpm dev:install
+sha256sum --check claudeland@fabiosm46.dev.shell-extension.zip.sha256
+gnome-extensions install --force claudeland@fabiosm46.dev.shell-extension.zip
 ```
 
 Log out and back in after the first installation, then enable it:
@@ -83,9 +86,27 @@ gnome-extensions info claudeland@fabiosm46.dev
 gnome-extensions prefs claudeland@fabiosm46.dev
 ```
 
+## Install from source
+
+Clone the public repository, install the locked development dependencies, and
+install the extension for your user:
+
+```bash
+git clone https://github.com/FabioSM46/claudeland.git
+cd claudeland
+corepack enable
+pnpm install --frozen-lockfile
+pnpm dev:install
+```
+
+Then follow the same logout, enable, and verification steps shown above.
+
 ## Update
 
-Update the checkout and reinstall the extension:
+For a pre-release installation, download the assets for the newer version,
+verify the checksum, and run `gnome-extensions install --force` again.
+
+For a source installation, update the checkout and reinstall the extension:
 
 ```bash
 cd claudeland
