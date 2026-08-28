@@ -27,8 +27,8 @@ importers:
         specifier: 4.14.4-4.0.0-beta.14
         version: 4.14.4-4.0.0-beta.14
       '@girs/soup-3.0':
-        specifier: 3.4.4-4.0.0-beta.15
-        version: 3.4.4-4.0.0-beta.15
+        specifier: 4.1.0
+        version: 4.1.0
       '@types/node':
         specifier: ^24.3.0
         version: 24.13.3
@@ -320,8 +320,8 @@ packages:
   '@girs/shew-0@0.0.0-4.0.0-rc.17':
     resolution: {integrity: sha512-YUzSrTT7euZufSXGDRMfxICWf0056TgwFr9P+0c9BdUAhFuCzlPv17/ozeCE/f1Rj2QNHS/THbwSCGrlmv62sg==}
 
-  '@girs/soup-3.0@3.4.4-4.0.0-beta.15':
-    resolution: {integrity: sha512-ZpRcjgcJv9VE5PfBZ2zzO5IzRzE6qqMWE34Ui5/AUZ1A4Q19u4STXFk5P7KL/t2TfUPQUSkbXCdogAHAi1e/5A==}
+  '@girs/soup-3.0@4.1.0':
+    resolution: {integrity: sha512-QYUNG9942aQqNgYBs3wN9jFdZOFWRkxetAxoKAfES8m5p+Ex1/javpAtOv+Z3b37QnQhRuXYmc8F33Vxl5RUng==}
 
   '@girs/st-14@14.0.0-4.0.0-rc.17':
     resolution: {integrity: sha512-8qkEY9/gKF/AZ8C3WNkAop1WD9T+Gj4hFnCyIcHqv5IA0thI0o9fdnlt78yxK/qcpMoqVwW0d0mOmr5r3/9zTQ==}
@@ -1837,12 +1837,13 @@ snapshots:
       '@girs/pango-1.0': 1.57.1-4.0.0-rc.17
       '@girs/pangocairo-1.0': 1.0.0-4.0.0-rc.17
 
-  '@girs/soup-3.0@3.4.4-4.0.0-beta.15':
+  '@girs/soup-3.0@4.1.0':
     dependencies:
-      '@girs/gio-2.0': 2.80.3-4.0.0-beta.15
-      '@girs/gjs': 4.0.0-beta.15
-      '@girs/glib-2.0': 2.80.3-4.0.0-beta.15
-      '@girs/gobject-2.0': 2.80.3-4.0.0-beta.15
+      '@girs/gio-2.0': 4.1.0
+      '@girs/gjs': 4.1.0
+      '@girs/glib-2.0': 4.1.0
+      '@girs/gmodule-2.0': 4.1.0
+      '@girs/gobject-2.0': 4.1.0
 
   '@girs/st-14@14.0.0-4.0.0-rc.17':
     dependencies:
