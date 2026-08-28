@@ -5,6 +5,7 @@
   "type": "module",
   "private": true,
   "license": "MIT",
+  "author": "FabioSM46",
   "engines": {
     "node": ">=20.19",
     "pnpm": ">=9"

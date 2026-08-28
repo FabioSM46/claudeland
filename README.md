@@ -37,7 +37,7 @@ Claudeland therefore integrates with GNOME Shell directly:
 - Wayland or X11 (Wayland is the primary target);
 - Claude Code installed and available as `claude` in `PATH`;
 - a Claude subscription authenticated through Claude Code;
-- Git, Node.js 20.19+, and pnpm 9+ when installing from source or contributing.
+- Git, Node.js 20.19+, and pnpm 9+ when installing from source.
 
 Check authentication with:
 
@@ -123,20 +123,6 @@ Log out and back in to reload the updated extension on Wayland.
 ```bash
 gnome-extensions disable claudeland@fabiosm46.dev
 gnome-extensions uninstall claudeland@fabiosm46.dev
-```
-
-## Development setup
-
-Contributors should work from `develop` and run the full project checks before
-committing:
-
-```bash
-git clone https://github.com/FabioSM46/claudeland.git
-cd claudeland
-git switch develop
-corepack enable
-pnpm install --frozen-lockfile
-pnpm check
 ```
 
 ## Commands
@@ -226,6 +212,17 @@ docs/             Architecture decisions and roadmap
   shows the official five-hour and weekly windows instead.
 - KDE Plasma, Sway, and Hyprland need separate frontends; they are not GNOME
   Shell and cannot load this extension.
+
+## Forking and attribution
+
+Claudeland does not accept external code contributions or pull requests. Bug
+reports may still be submitted through the issue tracker, and vulnerabilities
+must be reported privately as described in [SECURITY.md](SECURITY.md).
+
+Forks are permitted under the MIT License. Forks and redistributions must keep
+the original `LICENSE` file and its copyright notice, which identifies
+[FabioSM46](https://github.com/FabioSM46) as the original author. Forks are
+independent projects and must not imply official status or endorsement.
 
 ## License
 

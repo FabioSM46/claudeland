@@ -1,21 +1,12 @@
-# Contributing
+# Contribution policy
 
-1. Branch from `develop`.
-2. Install dependencies with `pnpm install --frozen-lockfile`.
-3. Make focused changes and add tests for domain behavior.
-4. Run `pnpm check`.
-5. Open a pull request targeting `develop`.
+Claudeland does not accept external code contributions or pull requests.
+External pull requests will be closed without review. Bug reports may still be
+submitted through the issue tracker, while vulnerabilities must be reported
+privately as described in [SECURITY.md](SECURITY.md).
 
-Use Conventional Commit subjects such as `feat: add compact panel mode` or
-`fix: handle expired Claude credentials`.
-
-GNOME UI changes should be tested in a nested Wayland session when possible.
-On GNOME 48 and older:
-
-```bash
-dbus-run-session gnome-shell --nested --wayland
-```
-
-All source strings must be written in English and wrapped with gettext when
-shown to users. Update `po/claudeland.pot` and the relevant translation files
-when adding or changing user-facing text.
+You are free to fork, modify, and redistribute Claudeland under the MIT
+License. Forks and redistributions must retain the original `LICENSE` file and
+its copyright notice identifying FabioSM46 as the original author. A fork is an
+independent project and must not imply that it is an official Claudeland
+release or endorsed by the original author.

@@ -1,10 +1,6 @@
-## Summary
+# External contributions are not accepted
 
-## Verification
-
-- [ ] `pnpm check`
-- [ ] No credential, account identifier, or real usage response was added
-- [ ] GNOME lifecycle resources are cleaned up
-- [ ] User-facing values represent remaining capacity
-
-## GNOME versions tested
+Claudeland does not accept external code contributions or pull requests.
+Please maintain proposed changes in your own fork under the terms of the MIT
+License, preserving the original copyright notice and attribution to
+FabioSM46.
