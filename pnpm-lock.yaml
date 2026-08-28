@@ -15,8 +15,8 @@ importers:
         specifier: 1.6.0-4.0.0-beta.15
         version: 1.6.0-4.0.0-beta.15
       '@girs/gjs':
-        specifier: 4.0.0-beta.15
-        version: 4.0.0-beta.15
+        specifier: 4.1.0
+        version: 4.1.0
       '@girs/gnome-shell':
         specifier: 46.0.2
         version: 46.0.2
@@ -175,9 +175,6 @@ packages:
 
   '@girs/gio-2.0@4.1.0':
     resolution: {integrity: sha512-irRUpGEOHknlk4TNoOlAaBCg/jCGZKZv8Ulr23mmqf+MTI6ygDcbJY6bdHAf5dZfbgkOXjhXRl753j8F850W9Q==}
-
-  '@girs/gjs@4.0.0-beta.15':
-    resolution: {integrity: sha512-Oa95oCD8PV0AVbOgVSon3qQ2v0kFuVgLz2t6OoJLiHW5JspXx4Juc8c+11rEZ7O/0RVi3/DqYmM0OUCBEe1RSg==}
 
   '@girs/gjs@4.0.0-beta.40':
     resolution: {integrity: sha512-+gHGA5PJvEExpiPkpc3+DSjhWGmxHDb482h52FO64eo2EmHuLoeOKCoUJIY0PS80xOJWFRSO2dNFxZdD1bV6XA==}
@@ -1117,7 +1114,7 @@ snapshots:
       '@girs/gdk-4.0': 4.1.0
       '@girs/gdkpixbuf-2.0': 2.0.0-4.0.0-rc.17
       '@girs/gio-2.0': 2.80.3-4.0.0-beta.15
-      '@girs/gjs': 4.0.0-beta.15
+      '@girs/gjs': 4.1.0
       '@girs/glib-2.0': 2.80.3-4.0.0-beta.15
       '@girs/gmodule-2.0': 2.0.0-4.0.0-rc.17
       '@girs/gobject-2.0': 2.80.3-4.0.0-beta.15
@@ -1130,7 +1127,7 @@ snapshots:
 
   '@girs/atk-1.0@2.52.0-4.0.0-beta.15':
     dependencies:
-      '@girs/gjs': 4.0.0-beta.15
+      '@girs/gjs': 4.1.0
       '@girs/glib-2.0': 2.80.3-4.0.0-beta.15
       '@girs/gobject-2.0': 2.80.3-4.0.0-beta.15
 
@@ -1340,7 +1337,7 @@ snapshots:
 
   '@girs/gio-2.0@2.80.3-4.0.0-beta.15':
     dependencies:
-      '@girs/gjs': 4.0.0-beta.15
+      '@girs/gjs': 4.1.0
       '@girs/glib-2.0': 2.80.3-4.0.0-beta.15
       '@girs/gobject-2.0': 2.80.3-4.0.0-beta.15
 
@@ -1371,13 +1368,6 @@ snapshots:
       '@girs/gmodule-2.0': 4.1.0
       '@girs/gobject-2.0': 4.1.0
 
-  '@girs/gjs@4.0.0-beta.15':
-    dependencies:
-      '@girs/cairo-1.0': 1.0.0-4.0.0-rc.17
-      '@girs/gio-2.0': 2.80.3-4.0.0-beta.15
-      '@girs/glib-2.0': 2.80.3-4.0.0-beta.15
-      '@girs/gobject-2.0': 2.80.3-4.0.0-beta.15
-
   '@girs/gjs@4.0.0-beta.40':
     dependencies:
       '@girs/cairo-1.0': 1.0.0-4.0.0-beta.40
@@ -1406,7 +1396,7 @@ snapshots:
 
   '@girs/glib-2.0@2.80.3-4.0.0-beta.15':
     dependencies:
-      '@girs/gjs': 4.0.0-beta.15
+      '@girs/gjs': 4.1.0
       '@girs/gobject-2.0': 2.80.3-4.0.0-beta.15
 
   '@girs/glib-2.0@2.82.4-4.0.0-beta.20':
@@ -1463,7 +1453,7 @@ snapshots:
       '@girs/gcr-4': 4.3.0-4.0.0-beta.20
       '@girs/gdm-1.0': 1.0.0-4.0.0-rc.17
       '@girs/gio-2.0': 2.80.3-4.0.0-beta.15
-      '@girs/gjs': 4.0.0-beta.15
+      '@girs/gjs': 4.1.0
       '@girs/glib-2.0': 2.80.3-4.0.0-beta.15
       '@girs/gnomebg-4.0': 4.1.0
       '@girs/gnomebluetooth-3.0': 3.0.0-4.0.0-rc.17
@@ -1516,7 +1506,7 @@ snapshots:
 
   '@girs/gobject-2.0@2.80.3-4.0.0-beta.15':
     dependencies:
-      '@girs/gjs': 4.0.0-beta.15
+      '@girs/gjs': 4.1.0
       '@girs/glib-2.0': 2.80.3-4.0.0-beta.15
 
   '@girs/gobject-2.0@2.82.4-4.0.0-beta.20':
@@ -1595,7 +1585,7 @@ snapshots:
       '@girs/gdk-4.0': 4.1.0
       '@girs/gdkpixbuf-2.0': 2.0.0-4.0.0-rc.17
       '@girs/gio-2.0': 2.80.3-4.0.0-beta.15
-      '@girs/gjs': 4.0.0-beta.15
+      '@girs/gjs': 4.1.0
       '@girs/glib-2.0': 2.80.3-4.0.0-beta.15
       '@girs/gmodule-2.0': 2.0.0-4.0.0-rc.17
       '@girs/gobject-2.0': 2.80.3-4.0.0-beta.15
@@ -1612,7 +1602,7 @@ snapshots:
       '@girs/gdk-4.0': 4.1.0
       '@girs/gdkpixbuf-2.0': 2.0.0-4.0.0-rc.17
       '@girs/gio-2.0': 2.80.3-4.0.0-beta.15
-      '@girs/gjs': 4.0.0-beta.15
+      '@girs/gjs': 4.1.0
       '@girs/glib-2.0': 2.80.3-4.0.0-beta.15
       '@girs/gmodule-2.0': 2.0.0-4.0.0-rc.17
       '@girs/gobject-2.0': 2.80.3-4.0.0-beta.15
@@ -1664,7 +1654,7 @@ snapshots:
   '@girs/harfbuzz-0.0@8.5.0-4.0.0-beta.15':
     dependencies:
       '@girs/freetype2-2.0': 2.0.0-4.0.0-rc.17
-      '@girs/gjs': 4.0.0-beta.15
+      '@girs/gjs': 4.1.0
       '@girs/glib-2.0': 2.80.3-4.0.0-beta.15
       '@girs/gobject-2.0': 2.80.3-4.0.0-beta.15
 
@@ -1840,7 +1830,7 @@ snapshots:
   '@girs/soup-3.0@3.4.4-4.0.0-beta.15':
     dependencies:
       '@girs/gio-2.0': 2.80.3-4.0.0-beta.15
-      '@girs/gjs': 4.0.0-beta.15
+      '@girs/gjs': 4.1.0
       '@girs/glib-2.0': 2.80.3-4.0.0-beta.15
       '@girs/gobject-2.0': 2.80.3-4.0.0-beta.15
 
