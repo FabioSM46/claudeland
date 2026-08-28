@@ -37,7 +37,7 @@ Claudeland therefore integrates with GNOME Shell directly:
 - Wayland or X11 (Wayland is the primary target);
 - Claude Code installed and available as `claude` in `PATH`;
 - a Claude subscription authenticated through Claude Code;
-- Node.js 20.19+ and pnpm 9+ for development only.
+- Git, Node.js 20.19+, and pnpm 9+ when installing from source or contributing.
 
 Check authentication with:
 
@@ -54,20 +54,16 @@ claude auth login --claudeai
 Claudeland never asks for browser cookies and does not save a second copy of
 your credential.
 
-## Development setup
+## Install from source
+
+Prebuilt releases are not available yet. Clone the public repository, install
+the locked development dependencies, and install the extension for your user:
 
 ```bash
-git clone git@github.com:FabioSM46/claudeland.git
+git clone https://github.com/FabioSM46/claudeland.git
 cd claudeland
-git switch develop
 corepack enable
-pnpm install
-pnpm check
-```
-
-Build and install the extension for the current user:
-
-```bash
+pnpm install --frozen-lockfile
 pnpm dev:install
 ```
 
@@ -79,6 +75,48 @@ gnome-extensions enable claudeland@fabiosm46.dev
 
 On X11, GNOME Shell can instead be restarted with `Alt+F2`, `r`, Enter. That
 restart shortcut is intentionally unavailable on Wayland.
+
+Verify the installation and open preferences with:
+
+```bash
+gnome-extensions info claudeland@fabiosm46.dev
+gnome-extensions prefs claudeland@fabiosm46.dev
+```
+
+## Update
+
+Update the checkout and reinstall the extension:
+
+```bash
+cd claudeland
+git switch main
+git pull --ff-only
+pnpm install --frozen-lockfile
+pnpm dev:install
+```
+
+Log out and back in to reload the updated extension on Wayland.
+
+## Uninstall
+
+```bash
+gnome-extensions disable claudeland@fabiosm46.dev
+gnome-extensions uninstall claudeland@fabiosm46.dev
+```
+
+## Development setup
+
+Contributors should work from `develop` and run the full project checks before
+committing:
+
+```bash
+git clone https://github.com/FabioSM46/claudeland.git
+cd claudeland
+git switch develop
+corepack enable
+pnpm install --frozen-lockfile
+pnpm check
+```
 
 ## Commands
 
