@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema id="org.gnome.shell.extensions.claudeland" path="/org/gnome/shell/extensions/claudeland/">
+    <key name="show-panel" type="b">
+      <default>true</default>
+      <summary>Show the GNOME panel indicator</summary>
+    </key>
+    <key name="compact-panel" type="b">
+      <default>false</default>
+      <summary>Show only the most constrained limit in the panel</summary>
+    </key>
+    <key name="show-desktop-widget" type="b">
+      <default>false</default>
+      <summary>Show a non-interactive desktop card</summary>
+    </key>
+    <key name="desktop-position" type="s">
+      <default>'top-right'</default>
+      <summary>Desktop card position</summary>
+    </key>
+    <key name="refresh-interval" type="u">
+      <range min="1" max="60"/>
+      <default>5</default>
+      <summary>Polling interval in minutes</summary>
+    </key>
+    <key name="warning-remaining" type="u">
+      <range min="1" max="99"/>
+      <default>25</default>
+      <summary>Remaining percentage warning threshold</summary>
+    </key>
+    <key name="critical-remaining" type="u">
+      <range min="0" max="98"/>
+      <default>10</default>
+      <summary>Remaining percentage critical threshold</summary>
+    </key>
+  </schema>
+</schemalist>

@@ -1,0 +1,44 @@
+{
+  "five_hour": {
+    "utilization": 19,
+    "resets_at": "2030-06-17T06:09:59.814020+00:00"
+  },
+  "seven_day": {
+    "utilization": 51,
+    "resets_at": "2030-06-20T15:59:59.814040+00:00"
+  },
+  "limits": [
+    {
+      "kind": "session",
+      "percent": 19,
+      "resets_at": "2030-06-17T06:09:59.814020+00:00"
+    },
+    {
+      "kind": "weekly",
+      "percent": 51,
+      "resets_at": "2030-06-20T15:59:59.814040+00:00"
+    },
+    {
+      "kind": "weekly_scoped",
+      "percent": 6,
+      "resets_at": "2030-06-20T15:59:59.814047+00:00",
+      "scope": {
+        "model": {
+          "id": "claude-fable-5",
+          "display_name": "Fable"
+        }
+      }
+    },
+    {
+      "kind": "weekly_scoped",
+      "percent": 33.3,
+      "resets_at": "2030-06-20T15:59:59.814047+00:00",
+      "scope": {
+        "model": {
+          "id": "future-model",
+          "display_name": "Future Model"
+        }
+      }
+    }
+  ]
+}

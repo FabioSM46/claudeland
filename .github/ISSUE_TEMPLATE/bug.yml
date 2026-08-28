@@ -1,0 +1,39 @@
+name: Bug report
+description: Report a reproducible Claudeland problem
+title: "bug: "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: Do not include credentials, account identifiers, or raw API responses.
+  - type: input
+    id: shell
+    attributes:
+      label: GNOME Shell version
+      placeholder: "46.0"
+    validations:
+      required: true
+  - type: dropdown
+    id: session
+    attributes:
+      label: Session type
+      options: [Wayland, X11]
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Reproduction steps
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Redacted logs
+      description: Remove tokens, email addresses, organization IDs, and raw responses.

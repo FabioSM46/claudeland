@@ -1,0 +1,100 @@
+.claudeland-panel {
+  spacing: 5px;
+}
+
+.claudeland-panel-icon {
+  icon-size: 14px;
+}
+
+.claudeland-status {
+  max-width: 420px;
+  color: #c9c6c1;
+}
+
+.claudeland-limit-item {
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+.claudeland-limit-content {
+  width: 280px;
+  spacing: 5px;
+}
+
+.claudeland-limit-label {
+  font-weight: 600;
+}
+
+.claudeland-limit-value {
+  font-feature-settings: "tnum";
+  font-weight: 700;
+  padding-left: 12px;
+}
+
+.claudeland-progress-track {
+  width: 240px;
+  height: 5px;
+  border-radius: 3px;
+  background-color: rgba(255, 255, 255, 0.14);
+}
+
+.claudeland-progress-fill {
+  height: 5px;
+  border-radius: 3px;
+  background-color: #8ccf7e;
+}
+
+.claudeland-reset-label {
+  color: #9b9893;
+  font-size: 0.85em;
+}
+
+.claudeland-warning {
+  color: #e5c07b;
+  background-color: #e5c07b;
+}
+
+.claudeland-critical {
+  color: #e06c75;
+  background-color: #e06c75;
+}
+
+.claudeland-ok {
+  color: #8ccf7e;
+}
+
+.claudeland-desktop-card {
+  padding: 16px 18px;
+  spacing: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  border-radius: 14px;
+  background-color: rgba(22, 22, 24, 0.76);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.24);
+}
+
+.claudeland-desktop-title {
+  color: #aaa7a2;
+  font-size: 0.78em;
+  font-weight: 700;
+}
+
+.claudeland-desktop-content {
+  spacing: 7px;
+}
+
+.claudeland-desktop-row {
+  spacing: 12px;
+}
+
+.claudeland-desktop-label {
+  color: #ece9e4;
+}
+
+.claudeland-desktop-value {
+  font-feature-settings: "tnum";
+  font-weight: 800;
+}
+
+.claudeland-desktop-empty {
+  color: #aaa7a2;
+}

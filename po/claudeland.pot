@@ -1,0 +1,197 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Claudeland 0.1.0\n"
+"Report-Msgid-Bugs-To: https://github.com/FabioSM46/claudeland/issues\n"
+"POT-Creation-Date: 2026-08-28 15:30+0200\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "%s remaining"
+msgstr ""
+
+msgid "%s · stale"
+msgstr ""
+
+msgid "%s · updated %s"
+msgstr ""
+
+msgid "About"
+msgstr ""
+
+msgid "Anthropic is currently unavailable."
+msgstr ""
+
+msgid "Anthropic returned an invalid response."
+msgstr ""
+
+msgid "Appearance"
+msgstr ""
+
+msgid "Bottom left"
+msgstr ""
+
+msgid "Bottom right"
+msgstr ""
+
+msgid "Card position"
+msgstr ""
+
+msgid "Choose where to show remaining Claude capacity."
+msgstr ""
+
+msgid "Claude account"
+msgstr ""
+
+msgid "Claude Code credentials were not found. Sign in to continue."
+msgstr ""
+
+msgid "Claude Code is not installed or is not available in PATH."
+msgstr ""
+
+msgid "Claude plan"
+msgstr ""
+
+msgid "Compact panel"
+msgstr ""
+
+msgid "Corner of the primary monitor."
+msgstr ""
+
+msgid "Could not reach Anthropic. Check your connection."
+msgstr ""
+
+msgid "Critical remaining capacity"
+msgstr ""
+
+msgid "Current session"
+msgstr ""
+
+msgid "Data unavailable"
+msgstr ""
+
+msgid "Desktop card"
+msgstr ""
+
+msgid "Extra usage"
+msgstr ""
+
+msgid "Install Claude Code to authenticate."
+msgstr ""
+
+msgid "Loading Claude usage…"
+msgstr ""
+
+msgid "Loading…"
+msgstr ""
+
+msgid "Minutes between usage requests."
+msgstr ""
+
+msgid "No compatible terminal was found to start Claude sign-in."
+msgstr ""
+
+msgid "Open Claude browser sign-in through Claude Code."
+msgstr ""
+
+msgid "Panel indicator"
+msgstr ""
+
+msgid "Preferences"
+msgstr ""
+
+msgid "Refresh interval"
+msgstr ""
+
+msgid "Refresh now"
+msgstr ""
+
+msgid "Remaining capacity warning"
+msgstr ""
+
+msgid "reset imminent"
+msgstr ""
+
+msgid "reset unavailable"
+msgstr ""
+
+msgid "resets in %dd %dh"
+msgstr ""
+
+msgid "resets in %dh %dm"
+msgstr ""
+
+msgid "resets in %dm"
+msgstr ""
+
+msgid "Show a non-interactive card below application windows."
+msgstr ""
+
+msgid "Show only the limit with the least remaining capacity."
+msgstr ""
+
+msgid "Show percentages in the GNOME top bar."
+msgstr ""
+
+msgid "Sign in"
+msgstr ""
+
+msgid "Sign in / renew session"
+msgstr ""
+
+msgid "Sign in or renew the session"
+msgstr ""
+
+msgid "Sign in to Claude Code to view usage."
+msgstr ""
+
+msgid "Sign-in is handled by the official Claude Code CLI."
+msgstr ""
+
+msgid "Source code and issue tracker"
+msgstr ""
+
+msgid "Stale data · %s"
+msgstr ""
+
+msgid "The Claude Code credentials file is invalid."
+msgstr ""
+
+msgid "The Claude session has expired. Sign in again."
+msgstr ""
+
+msgid "The Claude session is no longer valid. Sign in again."
+msgstr ""
+
+msgid "The desktop card is unavailable on this GNOME version."
+msgstr ""
+
+msgid "Too many requests. Claudeland will try again later."
+msgstr ""
+
+msgid "Top left"
+msgstr ""
+
+msgid "Top right"
+msgstr ""
+
+msgid "Unexpected Anthropic response."
+msgstr ""
+
+msgid "Unknown error"
+msgstr ""
+
+msgid "Updates and thresholds"
+msgstr ""
+
+msgid "Use the critical color below this percentage."
+msgstr ""
+
+msgid "Use the warning color below this percentage."
+msgstr ""
+
+msgid "Weekly · %s"
+msgstr ""
+
+msgid "Weekly · all models"
+msgstr ""
