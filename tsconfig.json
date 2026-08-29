@@ -11,6 +11,7 @@
     "rootDir": "src",
     "skipLibCheck": true,
     "strict": true,
+    "types": [],
     "target": "ES2023"
   },
   "include": ["ambient.d.ts", "src/**/*.ts"],

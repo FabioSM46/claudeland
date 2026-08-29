@@ -9,6 +9,8 @@
 //
 // It is test-only: it is never packaged and never installed on a real session.
 
+import GLib from 'gi://GLib';
+
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import { Extension } from 'resource:///org/gnome/shell/extensions/extension.js';
 
@@ -16,6 +18,48 @@ import { DesktopCard } from './ui/desktop-card.js';
 import { UsageIndicator } from './ui/usage-indicator.js';
 
 const ROLE = 'claudeland-uicheck';
+
+/** Long enough for the shell to settle after the probe is enabled. */
+const STACKING_DELAY = 8;
+
+function typeName(actor) {
+  return actor.constructor?.$gtype?.name ?? '';
+}
+
+/**
+ * Verifies where the card ended up: above the wallpaper, below every window.
+ * A missing window is reported as a failure, so the check cannot pass by
+ * simply never having anything to compare against.
+ */
+function checkStacking() {
+  const siblings = global.window_group.get_children();
+  const cardIndex = siblings.findIndex(
+    (child) => child.has_style_class_name?.('claudeland-desktop-card'),
+  );
+  const backgroundIndex = siblings.findIndex(
+    (child) => typeName(child) === 'MetaBackgroundGroup',
+  );
+  const windowIndexes = siblings
+    .map((child, index) => (typeName(child).startsWith('MetaWindowActor') ? index : -1))
+    .filter((index) => index >= 0);
+
+  if (cardIndex < 0) {
+    return ['the desktop card was not added to the window group'];
+  }
+  if (backgroundIndex < 0) {
+    return ['the wallpaper group was not found in the window group'];
+  }
+  if (cardIndex <= backgroundIndex) {
+    return [`the desktop card is not above the wallpaper (card ${cardIndex}, wallpaper ${backgroundIndex})`];
+  }
+  if (windowIndexes.length === 0) {
+    return ['no window appeared, so the card stacking could not be verified'];
+  }
+  if (cardIndex > Math.min(...windowIndexes)) {
+    return [`the desktop card is not below application windows (card ${cardIndex}, windows ${windowIndexes.join(',')})`];
+  }
+  return [];
+}
 
 const SNAPSHOT = {
   fetchedAt: new Date().toISOString(),
@@ -113,6 +157,8 @@ class ProbeController {
 }
 
 export default class ClaudelandUiCheck extends Extension {
+  _timeoutId = null;
+
   enable() {
     const failures = [];
     const settings = this.getSettings();
@@ -136,11 +182,21 @@ export default class ClaudelandUiCheck extends Extension {
         }
       }
 
+      // The card must sit above the wallpaper and below application windows.
+      // That placement is the whole point of the card, and it is reached
+      // through public API, so assert it rather than trusting it.
       indicator.menu.open();
       indicator.menu.close();
     } catch (error) {
       failures.push(String(error));
-    } finally {
+    }
+
+    // The card must end up above the wallpaper and below application windows.
+    // That ordering is only observable once a real window exists, so the check
+    // waits for the verification script to open one.
+    this._timeoutId = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT, STACKING_DELAY, () => {
+      this._timeoutId = null;
+      failures.push(...checkStacking());
       try {
         card?.destroy();
         indicator?.destroy();
@@ -148,14 +204,20 @@ export default class ClaudelandUiCheck extends Extension {
         failures.push(`teardown: ${error}`);
       }
       settings.reset('compact-panel');
-    }
 
-    if (failures.length > 0) {
-      console.error(`CLAUDELAND UI CHECK FAILED: ${failures.join(' | ')}`);
-    } else {
-      console.log('CLAUDELAND UI CHECK OK');
-    }
+      if (failures.length > 0) {
+        console.error(`CLAUDELAND UI CHECK FAILED: ${failures.join(' | ')}`);
+      } else {
+        console.log('CLAUDELAND UI CHECK OK');
+      }
+      return GLib.SOURCE_REMOVE;
+    });
   }
 
-  disable() {}
+  disable() {
+    if (this._timeoutId) {
+      GLib.Source.remove(this._timeoutId);
+      this._timeoutId = null;
+    }
+  }
 }

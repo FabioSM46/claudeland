@@ -47,6 +47,10 @@ spawns no subprocess.
 
 `UsageIndicator` owns the panel button, menu, polling lifecycle, error state,
 and user actions. `DesktopCard` is a read-only mirror of the latest snapshot.
+It is placed in `global.window_group` directly above the `Meta.BackgroundGroup`
+found among its children, which puts it above the wallpaper and below
+application windows without touching private shell fields. Both anchors are
+public, and the card refuses to build if the background group is missing.
 
 The extension composition root constructs both and destroys them in reverse
 order. No actor, signal, or GLib timer may survive `disable()`.

@@ -35,6 +35,9 @@ weekly limits, and dynamically discovered model-scoped limits.
   with gettext and update `po/claudeland.pot`; never hard-code Italian in code.
 - Clean up every GNOME signal, timeout, file monitor, and actor in `disable()`
   or `destroy()`.
+- Do not reach into underscore-prefixed GNOME Shell fields. Where a private
+  field looks necessary, find the same object through public API and fail
+  gracefully when it is absent.
 - Avoid synchronous network or filesystem work on the GNOME Shell main loop.
 
 ## Architecture boundaries

@@ -27,6 +27,10 @@ the project follows [Semantic Versioning](https://semver.org/).
 
 - Consult the Claude Code CLI only when the credential file is unusable or a
   renewal is required, so ordinary polling no longer spawns a subprocess.
+- Place the desktop card through public shell API instead of `LayoutManager`'s
+  private background group. The card keeps its position above the wallpaper and
+  below application windows, and that stacking is now asserted against a real
+  window on every supported GNOME Shell release.
 - Align lifecycle, signal cleanup, imports, and actor orientation with current
   GNOME Extensions review guidance.
 - Prepare a minimal extensions.gnome.org package without unnecessary compiled

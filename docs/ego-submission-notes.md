@@ -69,10 +69,14 @@ Anthropic's own flow and the user can see it. Never launched automatically.
 - **No eval and no remote code.** Nothing is downloaded and executed; the only
   network response is JSON, which is treated as untrusted and normalised in
   `domain/usage.js`.
-- **Private API.** The optional desktop card is added to
-  `Main.layoutManager._backgroundGroup` so it sits below application windows,
-  which has no public equivalent. If that is unacceptable, the card can be
-  dropped or moved to `addChrome()`; the panel indicator does not depend on it.
+- **No private shell API.** The optional desktop card, which is off by default,
+  has to sit above the wallpaper and below application windows. It reaches that
+  layer through public API only: it is added to `global.window_group` directly
+  above the `Meta.BackgroundGroup` found among its children, rather than
+  through `LayoutManager`'s private field for that group. If the group is not
+  found the card refuses to build and the extension reports it, leaving the
+  panel indicator working. The stacking is asserted on every supported release
+  by the verification described below.
 - **Settings.** Only presentation and polling preferences are stored. No token,
   account identifier, or email address is ever written to GSettings.
 

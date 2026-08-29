@@ -1,6 +1,6 @@
-import Clutter from 'gi://Clutter';
 import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
+import Meta from 'gi://Meta';
 import St from 'gi://St';
 
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
@@ -9,10 +9,6 @@ import { formatPercent, localizedLimitLabel } from '../domain/usage.js';
 import type { UsageController, UsageState } from '../services/usage-controller.js';
 import { setBoxLayoutVertical } from './compat.js';
 import { formatMessage, localizedError, translate as _ } from './localization.js';
-
-type LayoutManagerWithBackground = typeof Main.layoutManager & {
-  _backgroundGroup?: Clutter.Actor;
-};
 
 export class DesktopCard {
   private readonly actor: St.BoxLayout;
@@ -43,11 +39,19 @@ export class DesktopCard {
     this.actor.add_child(this.title);
     this.actor.add_child(this.content);
 
-    const layoutManager = Main.layoutManager as LayoutManagerWithBackground;
-    if (!layoutManager._backgroundGroup) {
+    // The card belongs above the wallpaper and below application windows. The
+    // wallpaper is a Meta.BackgroundGroup inside the window group, so the card
+    // goes into the window group directly above it. Finding that group by its
+    // public type avoids depending on LayoutManager's private field for it,
+    // and avoids adding a foreign child to a container the shell rebuilds.
+    const windowGroup = global.window_group;
+    const backgroundGroup = windowGroup?.get_children()
+      .find((child) => child instanceof Meta.BackgroundGroup);
+    if (!windowGroup || !backgroundGroup) {
       throw new Error('The GNOME Shell background group is unavailable');
     }
-    layoutManager._backgroundGroup.add_child(this.actor);
+    windowGroup.add_child(this.actor);
+    windowGroup.set_child_above_sibling(this.actor, backgroundGroup);
 
     Main.layoutManager.connectObject(
       'monitors-changed',

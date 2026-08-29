@@ -40,14 +40,20 @@ rm -f "$EXT_DIR/$PROBE/prefs.js"
 
 gsettings set org.gnome.shell disable-user-extensions false
 
+# start_shell <uuid to enable, empty for none> [uuid to wait for]
 start_shell() {
-  gsettings set org.gnome.shell enabled-extensions "['$1']"
+  if [ -n "$1" ]; then
+    gsettings set org.gnome.shell enabled-extensions "['$1']"
+  else
+    gsettings set org.gnome.shell enabled-extensions "[]"
+  fi
+  awaited=${2:-$1}
   rm -f /tmp/shell.log
   gnome-shell --headless --no-x11 --virtual-monitor 1280x720 > /tmp/shell.log 2>&1 &
   SHELL_PID=$!
   i=0
   while [ $i -lt 45 ]; do
-    if gnome-extensions info "$1" 2>/dev/null | grep -q "^  State:"; then
+    if gnome-extensions info "$awaited" 2>/dev/null | grep -q "^  State:"; then
       break
     fi
     i=$((i + 1))
@@ -109,7 +115,19 @@ stop_shell
 
 echo
 echo "=== phase 2: rendering every panel and card state ==="
-start_shell "$PROBE"
+# Start with no extension enabled and open a window first, so the probe builds
+# the desktop card while a window already exists. Stacking against a window
+# that appears later would pass no matter where the card was placed.
+start_shell "" "$PROBE"
+WAYLAND_DISPLAY=wayland-0 GDK_BACKEND=wayland gnome-extensions prefs "$UUID" >/dev/null 2>&1 || true
+sleep 8
+gnome-extensions enable "$PROBE" >/dev/null 2>&1 || true
+i=0
+while [ $i -lt 40 ]; do
+  grep -qE "CLAUDELAND UI CHECK" /tmp/shell.log && break
+  i=$((i + 1))
+  sleep 1
+done
 if grep -q "CLAUDELAND UI CHECK OK" /tmp/shell.log; then
   echo "ui probe: OK"
 else
