@@ -1,0 +1,14 @@
+# GNOME Shell 50, as shipped by Fedora 44.
+FROM fedora:44
+
+RUN dnf -y install --setopt=install_weak_deps=False \
+      gnome-shell mutter gjs glib2 libsoup3 \
+      dbus-daemon python3-dbusmock \
+      mesa-dri-drivers mesa-libGL mesa-libEGL \
+      gsettings-desktop-schemas glibc-langpack-en procps-ng \
+ && dnf clean all
+
+RUN useradd -u 1000 -m tester
+ENV LANG=C.UTF-8
+USER tester
+WORKDIR /home/tester

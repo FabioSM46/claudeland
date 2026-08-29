@@ -134,13 +134,32 @@ gnome-extensions uninstall claudeland@fabiosm46.dev
 | `pnpm build` | Transpile GJS code and copy extension assets |
 | `pnpm check` | Lint, typecheck, test, and build |
 | `pnpm test` | Run parser/domain unit tests |
+| `pnpm verify:gjs` | Run the domain smoke test under GJS |
+| `pnpm verify:session` | Exercise credential reading and session renewal under GJS |
+| `pnpm verify:shell` | Verify the built extension on every declared GNOME Shell release |
 | `pnpm dev:install` | Build and install into the user extension directory |
 | `pnpm package` | Produce an installable extension ZIP in `build/` |
 | `pnpm clean` | Remove generated `dist/`, `build/`, and `coverage/` |
 
 ## Testing the UI
 
-GNOME 48 and older can run a nested Wayland shell:
+Every GNOME Shell release declared in `metadata.json` is verified in a
+disposable container, so a second desktop is not needed:
+
+```bash
+pnpm build && pnpm verify:shell        # every declared release
+pnpm verify:shell 50                   # one release
+```
+
+For each release this starts a real headless GNOME Shell, enables the packaged
+extension, checks that it becomes `ACTIVE`, survives a disable/enable cycle,
+and leaves the journal clean, then renders every panel and card state through a
+throwaway probe extension (`tests/shell/uicheck-extension.js`). The containers
+have no network access and mock logind on a private bus, so nothing outside the
+container is touched. Docker is the only requirement.
+
+To drive the real UI by hand, GNOME 48 and older can run a nested Wayland
+shell:
 
 ```bash
 dbus-run-session gnome-shell --nested --wayland

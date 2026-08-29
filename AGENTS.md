@@ -53,5 +53,7 @@ weekly limits, and dynamically discovered model-scoped limits.
 - Automatic renewal is attempted at most once per request cycle and backs off
   after a failure.
 - New response shapes have fixtures and parser tests.
-- GNOME Shell version metadata matches versions actually tested.
+- GNOME Shell version metadata matches versions actually tested. Every release
+  declared in `metadata.json` passes `pnpm verify:shell`, and a newly declared
+  release has a container definition in `tests/shell/`.
 - User-facing percentages are remaining capacity, not consumed capacity.

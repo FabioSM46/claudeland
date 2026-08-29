@@ -31,6 +31,15 @@ export default tseslint.config(
     },
   },
   {
+    // GNOME Shell probe, loaded by the shell itself rather than by the build.
+    files: ['tests/shell/**/*.js'],
+    languageOptions: {
+      globals: {
+        console: 'readonly',
+      },
+    },
+  },
+  {
     files: ['scripts/**/*.mjs'],
     languageOptions: {
       globals: {

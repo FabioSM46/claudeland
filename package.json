@@ -21,7 +21,9 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
-    "verify:gjs": "gjs -m dist/smoke-test.js"
+    "verify:gjs": "gjs -m dist/smoke-test.js",
+    "verify:session": "gjs -m dist/session-check.js",
+    "verify:shell": "bash scripts/verify-shell.sh"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
