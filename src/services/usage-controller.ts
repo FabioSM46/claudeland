@@ -21,6 +21,16 @@ export interface UsageState {
 
 type StateListener = (state: Readonly<UsageState>) => void;
 
+type UsageClient = Pick<ClaudeUsageClient, 'fetch' | 'destroy'>;
+type UsageAuth = Pick<ClaudeAuth, 'status' | 'renew' | 'launchLogin' | 'destroy'>;
+type UsageCredentials = Pick<ClaudeCredentials, 'read'>;
+
+export interface UsageControllerDependencies {
+  client?: UsageClient;
+  auth?: UsageAuth;
+  credentials?: UsageCredentials;
+}
+
 /**
  * How long to wait before asking the CLI to renew again after a failure, so a
  * broken session cannot turn every poll into a subprocess spawn.
@@ -29,9 +39,9 @@ const RENEWAL_COOLDOWN_MS = 15 * 60 * 1000;
 
 export class UsageController {
   private readonly listeners = new Set<StateListener>();
-  private client: ClaudeUsageClient | null = new ClaudeUsageClient();
-  private auth: ClaudeAuth | null = new ClaudeAuth();
-  private credentials: ClaudeCredentials | null = new ClaudeCredentials();
+  private client: UsageClient | null;
+  private auth: UsageAuth | null;
+  private credentials: UsageCredentials | null;
   private timeoutId: number | null = null;
   private renewalBlockedUntil = 0;
   private state: UsageState = {
@@ -44,7 +54,14 @@ export class UsageController {
     planLabel: null,
   };
 
-  constructor(private readonly settings: Gio.Settings) {}
+  constructor(
+    private readonly settings: Gio.Settings,
+    dependencies: UsageControllerDependencies = {},
+  ) {
+    this.client = dependencies.client ?? new ClaudeUsageClient();
+    this.auth = dependencies.auth ?? new ClaudeAuth();
+    this.credentials = dependencies.credentials ?? new ClaudeCredentials();
+  }
 
   start(): void {
     void this.refresh();
@@ -218,22 +235,23 @@ export class UsageController {
       );
     }
 
-    let renewed: boolean;
     this.setState({ renewing: true });
     try {
-      renewed = await auth.renew(credential);
+      await auth.renew(credential);
     } finally {
       if (this.auth === auth) {
         this.setState({ renewing: false });
       }
     }
 
-    if (renewed) {
-      const next = await this.readCredential();
-      if (isAccessTokenUsable(next)) {
-        this.renewalBlockedUntil = 0;
-        return next;
-      }
+    // The credential file is the authority, not this subprocess's exit code.
+    // Another Claude Code process can rotate the single-use refresh token at
+    // the same time: our process then fails even though the shared file now
+    // contains a valid replacement.
+    const next = await this.readCredential();
+    if (isAccessTokenUsable(next)) {
+      this.renewalBlockedUntil = 0;
+      return next;
     }
 
     this.renewalBlockedUntil = Date.now() + RENEWAL_COOLDOWN_MS;

@@ -15,6 +15,7 @@ import GLib from 'gi://GLib';
 import { evaluateSession } from './domain/session.js';
 import { ClaudeAuth } from './services/claude-auth.js';
 import { ClaudeCredentials } from './services/claude-credentials.js';
+import { UsageController } from './services/usage-controller.js';
 
 const HOUR_MS = 60 * 60 * 1000;
 const ACCESS_TOKEN = 'access-token-placeholder';
@@ -162,6 +163,64 @@ async function main(): Promise<void> {
   check(!(await auth.renew(withoutRefresh)), 'renewal is not attempted without a refresh token');
 
   auth.destroy();
+
+  // Two Claude processes can race to rotate the same refresh token. The loser
+  // reports failure, but the winner has already written a usable credential.
+  // The controller must trust that shared file instead of prompting for login.
+  let credentialRead = 0;
+  let fetchedWithRotatedCredential = false;
+  const controller = new UsageController(
+    {
+      get_uint: (key: string) => key === 'refresh-interval' ? 5 : 20,
+    } as unknown as Gio.Settings,
+    {
+      credentials: {
+        async read() {
+          credentialRead += 1;
+          return {
+            accessToken: credentialRead === 1 ? ACCESS_TOKEN : 'rotated-access-token',
+            refreshToken: REFRESH_TOKEN,
+            hasRefreshToken: true,
+            accessTokenExpiresAt: credentialRead === 1
+              ? Date.now() - HOUR_MS
+              : Date.now() + 8 * HOUR_MS,
+            refreshTokenExpiresAt: Date.now() + 30 * 24 * HOUR_MS,
+            scopes: ['user:profile', 'user:inference'],
+            subscriptionType: 'max',
+            rateLimitTier: 'default_claude_max_5x',
+          };
+        },
+      },
+      auth: {
+        status: async () => ({
+          installed: true,
+          loggedIn: true,
+          authMethod: 'claude.ai',
+          subscriptionType: 'max',
+        }),
+        renew: async () => false,
+        launchLogin() {},
+        destroy() {},
+      },
+      client: {
+        async fetch(credential) {
+          fetchedWithRotatedCredential = credential.accessToken === 'rotated-access-token';
+          return {
+            snapshot: { fetchedAt: new Date().toISOString(), limits: [] },
+            planLabel: 'Claude Max 5x',
+          };
+        },
+        destroy() {},
+      },
+    },
+  );
+
+  await controller.refresh();
+  check(
+    fetchedWithRotatedCredential,
+    'a concurrent CLI rotation recovers a failed renewal without signing in',
+  );
+  controller.destroy();
 }
 
 const loop = new GLib.MainLoop(null, false);
