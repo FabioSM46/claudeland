@@ -19,46 +19,61 @@ import { UsageIndicator } from './ui/usage-indicator.js';
 
 const ROLE = 'claudeland-uicheck';
 
-/** Long enough for the shell to settle after the probe is enabled. */
-const STACKING_DELAY = 8;
+/** Long enough for the verification script to open a window on top. */
+const STACKING_DELAY = 12;
 
 function typeName(actor) {
   return actor.constructor?.$gtype?.name ?? '';
 }
 
+function isCard(actor) {
+  return actor.has_style_class_name?.('claudeland-desktop-card') === true;
+}
+
 /**
- * Verifies where the card ended up: above the wallpaper, below every window.
- * A missing window is reported as a failure, so the check cannot pass by
- * simply never having anything to compare against.
+ * Verifies where the card ended up: inside the wallpaper's own container, on
+ * top of the wallpaper, with the whole container below every window.
+ *
+ * Being a sibling of the window actors is not good enough. Mutter restacks the
+ * window group on every stacking change and moves the actors it owns around
+ * any foreign child, which floats the card above the windows. Only a window
+ * that appears after the card is built can catch that, so a missing window is
+ * reported as a failure rather than silently passing.
  */
 function checkStacking() {
   const siblings = global.window_group.get_children();
-  const cardIndex = siblings.findIndex(
-    (child) => child.has_style_class_name?.('claudeland-desktop-card'),
-  );
-  const backgroundIndex = siblings.findIndex(
-    (child) => typeName(child) === 'MetaBackgroundGroup',
-  );
+  const groups = siblings.filter((child) => typeName(child) === 'MetaBackgroundGroup');
+  if (groups.length === 0) {
+    return ['the wallpaper group was not found in the window group'];
+  }
+
+  const owner = groups.find((group) => group.get_children().some(isCard));
+  if (!owner) {
+    return [siblings.some(isCard)
+      ? 'the desktop card is a sibling of the window actors instead of a child of the wallpaper group'
+      : 'the desktop card was not added to the wallpaper group'];
+  }
+
+  const failures = [];
+  const children = owner.get_children();
+  console.log(`CLAUDELAND UI LAYERS: ${children.map(typeName).join(',')}`);
+  if (children.length < 2) {
+    failures.push('the wallpaper group holds no wallpaper actor, so the card layering is unverifiable');
+  }
+  if (!isCard(children[children.length - 1])) {
+    failures.push(`the desktop card is not on top of the wallpaper (${children.map(typeName).join(',')})`);
+  }
+
+  const groupIndex = siblings.indexOf(owner);
   const windowIndexes = siblings
     .map((child, index) => (typeName(child).startsWith('MetaWindowActor') ? index : -1))
     .filter((index) => index >= 0);
-
-  if (cardIndex < 0) {
-    return ['the desktop card was not added to the window group'];
-  }
-  if (backgroundIndex < 0) {
-    return ['the wallpaper group was not found in the window group'];
-  }
-  if (cardIndex <= backgroundIndex) {
-    return [`the desktop card is not above the wallpaper (card ${cardIndex}, wallpaper ${backgroundIndex})`];
-  }
   if (windowIndexes.length === 0) {
-    return ['no window appeared, so the card stacking could not be verified'];
+    failures.push('no window appeared, so the card stacking could not be verified');
+  } else if (groupIndex > Math.min(...windowIndexes)) {
+    failures.push(`the desktop card is not below application windows (wallpaper group ${groupIndex}, windows ${windowIndexes.join(',')})`);
   }
-  if (cardIndex > Math.min(...windowIndexes)) {
-    return [`the desktop card is not below application windows (card ${cardIndex}, windows ${windowIndexes.join(',')})`];
-  }
-  return [];
+  return failures;
 }
 
 const SNAPSHOT = {
@@ -182,18 +197,14 @@ export default class ClaudelandUiCheck extends Extension {
         }
       }
 
-      // The card must sit above the wallpaper and below application windows.
-      // That placement is the whole point of the card, and it is reached
-      // through public API, so assert it rather than trusting it.
       indicator.menu.open();
       indicator.menu.close();
     } catch (error) {
       failures.push(String(error));
     }
 
-    // The card must end up above the wallpaper and below application windows.
-    // That ordering is only observable once a real window exists, so the check
-    // waits for the verification script to open one.
+    // The stacking is only observable once a window has appeared after the card
+    // was built, so the check waits for the verification script to open one.
     this._timeoutId = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT, STACKING_DELAY, () => {
       this._timeoutId = null;
       failures.push(...checkStacking());

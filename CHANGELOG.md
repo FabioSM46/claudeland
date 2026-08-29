@@ -29,8 +29,10 @@ the project follows [Semantic Versioning](https://semver.org/).
   renewal is required, so ordinary polling no longer spawns a subprocess.
 - Place the desktop card through public shell API instead of `LayoutManager`'s
   private background group. The card keeps its position above the wallpaper and
-  below application windows, and that stacking is now asserted against a real
-  window on every supported GNOME Shell release.
+  below application windows: it is parented into the wallpaper's own group,
+  because a sibling of the window actors is restacked above them by mutter as
+  soon as a window appears. The stacking is asserted against a window opened
+  after the card on every supported GNOME Shell release.
 - Align lifecycle, signal cleanup, imports, and actor orientation with current
   GNOME Extensions review guidance.
 - Prepare a minimal extensions.gnome.org package without unnecessary compiled

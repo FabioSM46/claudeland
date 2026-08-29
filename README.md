@@ -247,8 +247,8 @@ docs/             Architecture decisions and roadmap
 ## Limitations
 
 - The usage endpoint is undocumented and may change without notice.
-- The desktop card uses a GNOME Shell internal background group because no
-  stable public API exists for third-party desktop widgets.
+- The desktop card lives inside the wallpaper's own actor group, since GNOME
+  Shell exposes no stable API dedicated to third-party desktop widgets.
 - A normal “daily quota” is not provided by Claude subscriptions. Claudeland
   shows the official five-hour and weekly windows instead.
 - KDE Plasma, Sway, and Hyprland need separate frontends; they are not GNOME

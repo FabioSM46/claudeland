@@ -31,10 +31,12 @@ export default tseslint.config(
     },
   },
   {
-    // GNOME Shell probe, loaded by the shell itself rather than by the build.
+    // GNOME Shell probe and helpers, loaded by the shell or by gjs rather than
+    // by the build.
     files: ['tests/shell/**/*.js'],
     languageOptions: {
       globals: {
+        ARGV: 'readonly',
         console: 'readonly',
         global: 'readonly',
       },

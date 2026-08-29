@@ -44,6 +44,7 @@ for version in "${versions[@]}"; do
   if docker run --rm --network none \
       -v "$root/dist:/home/tester/dist:ro" \
       -v "$root/tests/shell/uicheck-extension.js:/home/tester/uicheck-extension.js:ro" \
+      -v "$root/tests/shell/open-window.js:/home/tester/open-window.js:ro" \
       -v "$root/tests/shell/verify-in-container.sh:/home/tester/verify.sh:ro" \
       -e XDG_RUNTIME_DIR=/tmp/xdg \
       "$image" \

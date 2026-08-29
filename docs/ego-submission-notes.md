@@ -71,12 +71,15 @@ Anthropic's own flow and the user can see it. Never launched automatically.
   `domain/usage.js`.
 - **No private shell API.** The optional desktop card, which is off by default,
   has to sit above the wallpaper and below application windows. It reaches that
-  layer through public API only: it is added to `global.window_group` directly
-  above the `Meta.BackgroundGroup` found among its children, rather than
-  through `LayoutManager`'s private field for that group. If the group is not
-  found the card refuses to build and the extension reports it, leaving the
-  panel indicator working. The stacking is asserted on every supported release
-  by the verification described below.
+  layer through public API only: it is parented into the `Meta.BackgroundGroup`
+  found among `global.window_group`'s children, rather than through
+  `LayoutManager`'s private field for that same group. It has to be inside that
+  group rather than beside it, because mutter reorders the window group's own
+  actors around any foreign sibling and would float the card above the windows.
+  If the group is not found the card refuses to build and the extension reports
+  it, leaving the panel indicator working. The stacking is asserted against a
+  window opened after the card on every supported release by the verification
+  described below.
 - **Settings.** Only presentation and polling preferences are stored. No token,
   account identifier, or email address is ever written to GSettings.
 

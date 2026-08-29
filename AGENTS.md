@@ -38,6 +38,10 @@ weekly limits, and dynamically discovered model-scoped limits.
 - Do not reach into underscore-prefixed GNOME Shell fields. Where a private
   field looks necessary, find the same object through public API and fail
   gracefully when it is absent.
+- Keep the desktop card parented inside the wallpaper's `Meta.BackgroundGroup`,
+  never beside it in `global.window_group`. Mutter reorders the window group's
+  own actors around any foreign sibling and floats the card above application
+  windows as soon as a window appears.
 - Avoid synchronous network or filesystem work on the GNOME Shell main loop.
 
 ## Architecture boundaries

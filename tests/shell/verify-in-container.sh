@@ -63,9 +63,22 @@ start_shell() {
 }
 
 stop_shell() {
+  for pid in $WINDOW_PIDS; do
+    kill "$pid" 2>/dev/null || true
+  done
+  WINDOW_PIDS=""
   kill "$SHELL_PID" 2>/dev/null || true
   wait "$SHELL_PID" 2>/dev/null || true
   sleep 1
+}
+
+# open_window <name>: a real client window on the shell's Wayland socket.
+WINDOW_PIDS=""
+open_window() {
+  WAYLAND_DISPLAY=wayland-0 GDK_BACKEND=wayland gjs -m /home/tester/open-window.js "$1" \
+    >/dev/null 2>&1 &
+  WINDOW_PIDS="$WINDOW_PIDS $!"
+  sleep 4
 }
 
 echo "### $(gnome-shell --version) · $(gjs --version | head -1)"
@@ -115,13 +128,15 @@ stop_shell
 
 echo
 echo "=== phase 2: rendering every panel and card state ==="
-# Start with no extension enabled and open a window first, so the probe builds
-# the desktop card while a window already exists. Stacking against a window
-# that appears later would pass no matter where the card was placed.
+# One window before the card is built and one after it. The second is what
+# makes the stacking check meaningful: mutter reorders the window group only
+# when a window appears, and that is when a card parented next to the window
+# actors instead of inside the wallpaper group floats to the front.
 start_shell "" "$PROBE"
-WAYLAND_DISPLAY=wayland-0 GDK_BACKEND=wayland gnome-extensions prefs "$UUID" >/dev/null 2>&1 || true
-sleep 8
+open_window before
 gnome-extensions enable "$PROBE" >/dev/null 2>&1 || true
+sleep 3
+open_window after
 i=0
 while [ $i -lt 40 ]; do
   grep -qE "CLAUDELAND UI CHECK" /tmp/shell.log && break
@@ -132,7 +147,7 @@ if grep -q "CLAUDELAND UI CHECK OK" /tmp/shell.log; then
   echo "ui probe: OK"
 else
   echo "ui probe: FAILED"
-  grep -iE "CLAUDELAND UI CHECK|JS ERROR|claudeland" /tmp/shell.log || echo "(no probe output)"
+  grep -iE "CLAUDELAND UI CHECK|CLAUDELAND UI LAYERS|JS ERROR|claudeland" /tmp/shell.log || echo "(no probe output)"
   STATUS=1
 fi
 stop_shell

@@ -19,5 +19,6 @@ surface.
 - The behavior is native and efficient on GNOME.
 - GNOME release compatibility requires ongoing testing.
 - Other compositors require their own frontend.
-- The desktop card depends on a private GNOME background group until GNOME
-  exposes an appropriate stable API.
+- The desktop card depends on the wallpaper's actor group, located through
+  public API, until GNOME exposes an appropriate stable API for desktop
+  widgets.

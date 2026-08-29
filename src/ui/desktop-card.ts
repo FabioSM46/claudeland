@@ -16,6 +16,7 @@ export class DesktopCard {
   private readonly content: St.BoxLayout;
   private readonly unsubscribe: () => void;
   private positionSourceId: number | null = null;
+  private backgroundGroup: Meta.BackgroundGroup | null = null;
 
   constructor(
     controller: UsageController,
@@ -39,23 +40,29 @@ export class DesktopCard {
     this.actor.add_child(this.title);
     this.actor.add_child(this.content);
 
-    // The card belongs above the wallpaper and below application windows. The
-    // wallpaper is a Meta.BackgroundGroup inside the window group, so the card
-    // goes into the window group directly above it. Finding that group by its
-    // public type avoids depending on LayoutManager's private field for it,
-    // and avoids adding a foreign child to a container the shell rebuilds.
-    const windowGroup = global.window_group;
-    const backgroundGroup = windowGroup?.get_children()
-      .find((child) => child instanceof Meta.BackgroundGroup);
-    if (!windowGroup || !backgroundGroup) {
+    // The card belongs above the wallpaper and below every application window,
+    // so it lives inside the wallpaper's own container rather than beside it.
+    // Mutter restacks the window group itself on every stacking change and
+    // moves the actors it owns around any foreign sibling, which would float
+    // the card above the windows; it never reorders inside the background
+    // group. Locating that group by its public type keeps the same parent the
+    // shell uses without reaching for LayoutManager's private field.
+    this.backgroundGroup = global.window_group?.get_children()
+      .find((child): child is Meta.BackgroundGroup => child instanceof Meta.BackgroundGroup)
+      ?? null;
+    if (!this.backgroundGroup) {
       throw new Error('The GNOME Shell background group is unavailable');
     }
-    windowGroup.add_child(this.actor);
-    windowGroup.set_child_above_sibling(this.actor, backgroundGroup);
+    this.backgroundGroup.add_child(this.actor);
+    this.raiseAboveWallpaper();
 
     Main.layoutManager.connectObject(
       'monitors-changed',
-      () => this.position(),
+      () => {
+        // A monitor change rebuilds the wallpaper actors in this same group.
+        this.raiseAboveWallpaper();
+        this.position();
+      },
       this.actor,
     );
     this.unsubscribe = controller.subscribe((state) => this.render(state));
@@ -64,6 +71,7 @@ export class DesktopCard {
   destroy(): void {
     this.unsubscribe();
     Main.layoutManager.disconnectObject(this.actor);
+    this.backgroundGroup = null;
     if (this.positionSourceId !== null) {
       GLib.Source.remove(this.positionSourceId);
       this.positionSourceId = null;
@@ -115,6 +123,11 @@ export class DesktopCard {
       this.content.add_child(row);
     }
     this.queuePosition();
+  }
+
+  /** Keeps the card on top of the wallpaper actors sharing its container. */
+  private raiseAboveWallpaper(): void {
+    this.backgroundGroup?.set_child_above_sibling(this.actor, null);
   }
 
   private queuePosition(): void {
