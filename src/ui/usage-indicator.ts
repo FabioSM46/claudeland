@@ -195,9 +195,17 @@ function createLimitRow(limit: UsageLimit): PopupMenu.PopupBaseMenuItem {
   const track = new St.BoxLayout({ style_class: 'claudeland-progress-track' });
   const fill = new St.Widget({
     style_class: `claudeland-progress-fill claudeland-${limit.severity}`,
-    width: Math.max(2, Math.round(limit.remainingPercent * 2.4)),
   });
   track.add_child(fill);
+  const fraction = Math.min(100, Math.max(0, limit.remainingPercent)) / 100;
+  const updateFillWidth = () => {
+    fill.width = Math.max(2, Math.round(track.width * fraction));
+  };
+  // A vertical BoxLayout stretches the track across the row. Derive the fill
+  // from that allocated width instead of assuming the track stayed at its CSS
+  // preferred width. This signal disappears with the track actor itself.
+  track.connect('notify::width', updateFillWidth);
+  updateFillWidth();
   content.add_child(track);
   content.add_child(new St.Label({
     text: formatTimeRemaining(limit.resetsAt, new Date(), _),

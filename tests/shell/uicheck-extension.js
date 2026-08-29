@@ -30,6 +30,41 @@ function isCard(actor) {
   return actor.has_style_class_name?.('claudeland-desktop-card') === true;
 }
 
+function actorsWithStyle(root, styleClass) {
+  const matches = [];
+  const visit = (actor) => {
+    if (actor.has_style_class_name?.(styleClass) === true) {
+      matches.push(actor);
+    }
+    for (const child of actor.get_children?.() ?? []) {
+      visit(child);
+    }
+  };
+  visit(root);
+  return matches;
+}
+
+function checkProgressBars(indicator) {
+  const expectedFractions = SNAPSHOT.limits.map((limit) => limit.remainingPercent / 100);
+  const tracks = actorsWithStyle(indicator.menu.box, 'claudeland-progress-track');
+  if (tracks.length !== expectedFractions.length) {
+    return [`expected ${expectedFractions.length} progress tracks, found ${tracks.length}`];
+  }
+
+  const failures = [];
+  for (const [index, track] of tracks.entries()) {
+    const fill = track.get_first_child();
+    const actualFraction = fill?.width / track.width;
+    if (!Number.isFinite(actualFraction)
+        || Math.abs(actualFraction - expectedFractions[index]) > 0.01) {
+      failures.push(
+        `progress ${index} is ${fill?.width ?? 'missing'}/${track.width}px, expected ${expectedFractions[index] * 100}%`,
+      );
+    }
+  }
+  return failures;
+}
+
 /**
  * Verifies where the card ended up: inside the wallpaper's own container, on
  * top of the wallpaper, with the whole container below every window.
@@ -174,6 +209,8 @@ class ProbeController {
 export default class ClaudelandUiCheck extends Extension {
   _timeoutId = null;
 
+  _progressTimeoutId = null;
+
   enable() {
     const failures = [];
     const settings = this.getSettings();
@@ -198,7 +235,12 @@ export default class ClaudelandUiCheck extends Extension {
       }
 
       indicator.menu.open();
-      indicator.menu.close();
+      this._progressTimeoutId = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT, 1, () => {
+        this._progressTimeoutId = null;
+        failures.push(...checkProgressBars(indicator));
+        indicator.menu.close();
+        return GLib.SOURCE_REMOVE;
+      });
     } catch (error) {
       failures.push(String(error));
     }
@@ -226,6 +268,10 @@ export default class ClaudelandUiCheck extends Extension {
   }
 
   disable() {
+    if (this._progressTimeoutId) {
+      GLib.Source.remove(this._progressTimeoutId);
+      this._progressTimeoutId = null;
+    }
     if (this._timeoutId) {
       GLib.Source.remove(this._timeoutId);
       this._timeoutId = null;
