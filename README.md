@@ -153,8 +153,9 @@ pnpm verify:shell 50                   # one release
 
 For each release this starts a real headless GNOME Shell, enables the packaged
 extension, checks that it becomes `ACTIVE`, survives a disable/enable cycle,
-and leaves the journal clean, then renders every panel and card state through a
-throwaway probe extension (`tests/shell/uicheck-extension.js`). The containers
+and leaves the journal clean, opens the preferences dialog in its own GTK
+process, then renders every panel and card state through a throwaway probe
+extension (`tests/shell/uicheck-extension.js`). The containers
 have no network access and mock logind on a private bus, so nothing outside the
 container is touched. Docker is the only requirement.
 

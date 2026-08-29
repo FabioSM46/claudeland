@@ -89,6 +89,22 @@ if grep -qiE "JS ERROR|JS WARNING" /tmp/shell.log; then
 else
   echo "no JS errors or warnings in the journal"
 fi
+
+# The preferences dialog runs in its own GTK process, against a different
+# library stack than the shell, so it needs its own check. The Extensions app
+# reports a failing prefs.js as "Failed to open preferences".
+WAYLAND_DISPLAY=wayland-0 GDK_BACKEND=wayland gnome-extensions prefs "$UUID" >/dev/null 2>&1 || true
+sleep 8
+if [ ! -f /tmp/all.log ]; then
+  echo "preferences: SKIPPED (stderr was not captured to /tmp/all.log)"
+  STATUS=1
+elif grep -q "Failed to open preferences" /tmp/all.log; then
+  echo "preferences: FAILED"
+  grep -A3 "Failed to open preferences" /tmp/all.log | head -8
+  STATUS=1
+else
+  echo "preferences opened without error"
+fi
 stop_shell
 
 echo

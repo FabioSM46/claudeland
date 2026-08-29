@@ -47,8 +47,8 @@ for version in "${versions[@]}"; do
       -v "$root/tests/shell/verify-in-container.sh:/home/tester/verify.sh:ro" \
       -e XDG_RUNTIME_DIR=/tmp/xdg \
       "$image" \
-      sh -c 'mkdir -p /tmp/xdg && chmod 700 /tmp/xdg && dbus-run-session -- /home/tester/verify.sh' \
-      2>/dev/null | grep -E '^###|^ *ok |^state |^no JS|^unexpected|^ui probe|passed|FAILED'; then
+      sh -c 'mkdir -p /tmp/xdg && chmod 700 /tmp/xdg && dbus-run-session -- /home/tester/verify.sh 2>/tmp/all.log' \
+      2>/dev/null | grep -E '^###|^ *ok |^state |^no JS|^unexpected|^ui probe|^preferences|passed|FAILED'; then
     :
   else
     status=1

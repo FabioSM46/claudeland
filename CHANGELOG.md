@@ -15,8 +15,8 @@ the project follows [Semantic Versioning](https://semver.org/).
 - GNOME Shell 50 compatibility metadata, type validation, and runtime smoke
   testing while retaining GNOME Shell 46 support. Both releases are now
   verified automatically with `pnpm verify:shell`, which starts a real headless
-  GNOME Shell in a container, activates the extension, and renders every panel
-  and card state.
+  GNOME Shell in a container, activates the extension, opens its preferences
+  dialog, and renders every panel and card state.
 - A GJS harness for credential reading and session renewal, covering what the
   Node tests cannot reach: `Gio` file access and the subprocess handover to the
   Claude Code CLI.

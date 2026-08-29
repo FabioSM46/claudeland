@@ -80,8 +80,15 @@ Anthropic's own flow and the user can see it. Never launched automatically.
 
 `metadata.json` declares GNOME Shell 46 and 50. Both are verified with
 `pnpm verify:shell`, which for each release starts a real headless GNOME Shell
-in a disposable container, enables the extension, checks that it reaches the
-`ACTIVE` state and survives a disable/enable cycle with an empty journal, and
-then renders every panel and card state through a throwaway probe extension.
+in a disposable container and checks that the extension:
+
+- reaches the `ACTIVE` state and survives a disable/enable cycle with an empty
+  journal;
+- opens its preferences dialog, which runs in a separate GTK process against a
+  different library stack;
+- renders every panel and card state — loading, renewing, failed renewal, stale
+  data, and a full snapshot, in both the compact and full panel layouts —
+  through a throwaway probe extension.
+
 The containers have no network access and mock logind on a private bus, so the
 verification touches nothing outside itself.
