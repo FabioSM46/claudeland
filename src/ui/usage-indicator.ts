@@ -121,7 +121,9 @@ class UsageIndicatorImpl extends PanelMenu.Button {
   private renderMenu(state: Readonly<UsageState>): void {
     this.limitsSection.removeAll();
 
-    if (state.loading && !state.snapshot) {
+    if (state.renewing) {
+      this.statusItem.label.text = _('Renewing the Claude session…');
+    } else if (state.loading && !state.snapshot) {
       this.statusItem.label.text = _('Loading Claude usage…');
     } else if (state.error) {
       const error = localizedError(state.errorCode, state.error);
@@ -152,6 +154,7 @@ class UsageIndicatorImpl extends PanelMenu.Button {
     const needsLogin = state.errorCode === 'not-authenticated'
       || state.errorCode === 'credentials-missing'
       || state.errorCode === 'credentials-expired'
+      || state.errorCode === 'renewal-failed'
       || state.errorCode === 'unauthorized';
     this.loginItem.visible = needsLogin;
   }

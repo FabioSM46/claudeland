@@ -164,9 +164,10 @@ journalctl --user -f -o cat /usr/bin/gnome-shell
 Claude Code browser login
           │
           ▼
-~/.claude/.credentials.json
-          │ read on demand, never copied
-          ▼
+~/.claude/.credentials.json <── claude auth login (non-interactive renewal)
+          │                                │
+          │ read on demand, never copied   │ access token expired, or 401
+          ▼                                │
 ClaudeUsageClient ── HTTPS ──> Anthropic OAuth usage endpoint
           │
           ▼
@@ -174,14 +175,32 @@ normalizeUsage() ──> UsageSnapshot ──> panel + desktop card
 ```
 
 The extension polls at a configurable interval, with a minimum of one minute.
-It does not send prompts or create Claude conversations. A `401` asks the user
-to authenticate again; a `429` preserves the last valid snapshot and backs off.
+It does not send prompts or create Claude conversations. A `429` preserves the
+last valid snapshot and backs off.
+
+### Session renewal
+
+Claude Code issues a short-lived access token alongside a long-lived refresh
+token, so an access token that expires overnight does not end the session.
+
+When the access token has expired, or a request comes back `401`, Claudeland
+asks the Claude Code CLI to renew the session non-interactively and retries the
+request once. Claudeland never speaks the OAuth token protocol itself: the CLI
+keeps ownership of the client identity, of refresh-token rotation, and of the
+credential file. The refresh token is read from that file, passed to the CLI
+through the child environment, and never stored or logged.
+
+Signing in again is requested only when the refresh token is missing, expired,
+or rejected. After a failed renewal Claudeland waits fifteen minutes before
+trying again.
 
 ## Privacy
 
 - No analytics or telemetry.
 - No browser-cookie access.
 - No account identifiers in settings.
+- No credential is copied out of `~/.claude/.credentials.json`; the refresh
+  token is only handed back to the Claude Code CLI.
 - No real API responses or credentials in test fixtures.
 - Usage data stays in memory and is discarded when the extension is disabled.
 

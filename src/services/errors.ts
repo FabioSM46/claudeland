@@ -4,6 +4,7 @@ export type ClaudelandErrorCode =
   | 'credentials-missing'
   | 'credentials-invalid'
   | 'credentials-expired'
+  | 'renewal-failed'
   | 'unauthorized'
   | 'rate-limited'
   | 'server-error'

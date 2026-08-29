@@ -8,11 +8,17 @@ the project follows [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- Automatic session renewal. When the Claude access token has expired, or an
+  authenticated request is rejected, Claudeland asks the Claude Code CLI to
+  renew the session non-interactively and retries once. Sign-in is requested
+  only when the refresh token is missing, expired, or rejected.
 - GNOME Shell 50 compatibility metadata, type validation, and runtime smoke
   testing while retaining GNOME Shell 46 support.
 
 ### Changed
 
+- Consult the Claude Code CLI only when the credential file is unusable or a
+  renewal is required, so ordinary polling no longer spawns a subprocess.
 - Align lifecycle, signal cleanup, imports, and actor orientation with current
   GNOME Extensions review guidance.
 - Prepare a minimal extensions.gnome.org package without unnecessary compiled
@@ -22,6 +28,9 @@ the project follows [Semantic Versioning](https://semver.org/).
 
 ### Fixed
 
+- Stop demanding a browser sign-in after the access token expires. An eight-hour
+  access token expiring overnight left the panel asking for a login even though
+  the session remained renewable for weeks.
 - Apply warning and critical colors to percentage text without painting its
   background, while preserving the matching progress-bar colors.
 - Keep bottom-positioned desktop cards inside the monitor after their content

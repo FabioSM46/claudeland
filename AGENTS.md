@@ -20,6 +20,13 @@ weekly limits, and dynamically discovered model-scoped limits.
   refresh token, email address, or organization identifier.
 - Do not add browser-cookie scraping. Authentication must remain delegated to
   the Claude Code CLI.
+- Do not implement the OAuth token protocol. Session renewal is delegated to
+  the Claude Code CLI, which owns the client identity, refresh-token rotation,
+  and the credential file format (ADR 003).
+- The refresh token may only be held in memory and handed to the CLI through
+  the child environment. Never place it in argv, GSettings, a log, or a file.
+- An expired access token is not an expired session. Prompt for sign-in only
+  when the refresh token is missing, expired, or rejected.
 - The OAuth usage endpoint is undocumented. Keep it isolated in
   `src/services/claude-usage-client.ts` and tolerate compatible schema changes.
 - Do not hard-code Fable or other future models into the parser. Scoped limits
@@ -43,6 +50,8 @@ weekly limits, and dynamically discovered model-scoped limits.
 - No secret values appear in code, fixtures, snapshots, errors, or logs.
 - A failed/expired login produces a recoverable UI state.
 - HTTP 401 and 429 have explicit behavior.
+- Automatic renewal is attempted at most once per request cycle and backs off
+  after a failure.
 - New response shapes have fixtures and parser tests.
 - GNOME Shell version metadata matches versions actually tested.
 - User-facing percentages are remaining capacity, not consumed capacity.

@@ -9,6 +9,8 @@ const ERROR_MESSAGES: Partial<Record<ClaudelandErrorCode, string>> = {
   'credentials-missing': 'Claude Code credentials were not found. Sign in to continue.',
   'credentials-invalid': 'The Claude Code credentials file is invalid.',
   'credentials-expired': 'The Claude session has expired. Sign in again.',
+  'renewal-failed':
+    'The Claude session could not be renewed automatically. Retrying later.',
   unauthorized: 'The Claude session is no longer valid. Sign in again.',
   'rate-limited': 'Too many requests. Claudeland will try again later.',
   'server-error': 'Anthropic is currently unavailable.',

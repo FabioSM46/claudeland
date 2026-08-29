@@ -16,19 +16,32 @@
 severity, deduplicates legacy and normalized response shapes, and discovers
 model scopes dynamically.
 
-This module has no GJS imports and runs in both GNOME Shell and Node tests.
+`src/domain/credential.ts` parses the Claude Code credential file, and
+`src/domain/session.ts` decides whether the session is usable, renewable, or
+truly expired. Keeping that decision pure is what makes the difference between
+"the access token expired" and "the user must sign in again" testable.
+
+These modules have no GJS imports and run in both GNOME Shell and Node tests.
 
 ### Services
 
-`ClaudeCredentials` reads the credential created by Claude Code. It returns the
-minimum fields needed for a request and never logs the parsed object.
+`ClaudeCredentials` reads the credential created by Claude Code, re-reading it
+on every request so a token the CLI rotated is picked up immediately. It never
+logs the parsed object.
 
-`ClaudeAuth` checks whether Claude Code is available/authenticated and launches
-the official CLI login in the user's terminal.
+`ClaudeAuth` checks whether Claude Code is available and authenticated, renews
+an expired session non-interactively through the CLI, and launches the official
+CLI login in the user's terminal. See ADR 003 for why renewal is delegated.
 
-`ClaudeUsageClient` is the only module that knows the endpoint URL, beta header,
-or credential file shape. It converts transport failures into typed errors and
-hands untrusted JSON to the domain normalizer.
+`ClaudeUsageClient` is the only module that knows the endpoint URL and beta
+header. It performs one request with the credential it is given, converts
+transport failures into typed errors, and hands untrusted JSON to the domain
+normalizer.
+
+`UsageController` owns the polling loop and the session state machine: read the
+credential, renew it when the access token is expired or expiring, request
+usage, and retry once after a renewal triggered by an HTTP 401. The happy path
+spawns no subprocess.
 
 ### UI
 
@@ -44,7 +57,9 @@ order. No actor, signal, or GLib timer may survive `disable()`.
 |---|---|
 | Claude CLI missing | Show installation guidance; no login action |
 | Not authenticated | Show an explicit login action |
-| Credential expired / HTTP 401 | Preserve last data, request login |
+| Access token expired, refresh token valid | Renew through the CLI, retry once, no login prompt |
+| Renewal failed | Preserve last data, offer login, back off for 15 minutes |
+| Refresh token missing or expired / HTTP 401 after renewal | Preserve last data, request login |
 | HTTP 429 | Preserve last data, apply polling backoff |
 | Offline / 5xx | Preserve last data and mark it stale |
 | Invalid response | Reject snapshot; never partially trust it |

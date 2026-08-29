@@ -1,24 +1,20 @@
 import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
 
+import {
+  InvalidCredentialError,
+  parseCredential,
+  type ClaudeCredential,
+} from '../domain/credential.js';
 import { ClaudelandError } from './errors.js';
 
-interface CredentialFile {
-  claudeAiOauth?: {
-    accessToken?: unknown;
-    expiresAt?: unknown;
-    subscriptionType?: unknown;
-    rateLimitTier?: unknown;
-  };
-}
+export type { ClaudeCredential };
 
-export interface ClaudeCredential {
-  accessToken: string;
-  expiresAt: number | null;
-  subscriptionType: string | null;
-  rateLimitTier: string | null;
-}
-
+/**
+ * Reads the credential Claude Code owns. The file is re-read on every request
+ * so a token the CLI rotated in the meantime is picked up without restarting
+ * the extension.
+ */
 export class ClaudeCredentials {
   private readonly path: string;
 
@@ -43,9 +39,9 @@ export class ClaudeCredentials {
       );
     }
 
-    let parsed: CredentialFile;
+    let payload: unknown;
     try {
-      parsed = JSON.parse(new TextDecoder().decode(bytes)) as CredentialFile;
+      payload = JSON.parse(new TextDecoder().decode(bytes)) as unknown;
     } catch {
       throw new ClaudelandError(
         'credentials-invalid',
@@ -53,29 +49,20 @@ export class ClaudeCredentials {
       );
     }
 
-    const oauth = parsed.claudeAiOauth;
-    if (!oauth || typeof oauth.accessToken !== 'string' || !oauth.accessToken) {
+    try {
+      return parseCredential(payload);
+    } catch (error) {
+      if (error instanceof InvalidCredentialError) {
+        throw new ClaudelandError(
+          error.problem === 'missing' ? 'credentials-missing' : 'credentials-invalid',
+          error.message,
+        );
+      }
       throw new ClaudelandError(
-        'credentials-missing',
-        'The Claude Code session does not contain an OAuth credential.',
+        'credentials-invalid',
+        'The Claude Code credentials file is invalid.',
       );
     }
-
-    const expiresAt = typeof oauth.expiresAt === 'number' ? oauth.expiresAt : null;
-    if (expiresAt !== null && expiresAt <= Date.now()) {
-      throw new ClaudelandError(
-        'credentials-expired',
-        'The Claude session has expired. Sign in again.',
-      );
-    }
-
-    return {
-      accessToken: oauth.accessToken,
-      expiresAt,
-      subscriptionType:
-        typeof oauth.subscriptionType === 'string' ? oauth.subscriptionType : null,
-      rateLimitTier: typeof oauth.rateLimitTier === 'string' ? oauth.rateLimitTier : null,
-    };
   }
 }
 

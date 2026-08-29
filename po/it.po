@@ -116,6 +116,9 @@ msgstr "Aggiorna ora"
 msgid "Remaining capacity warning"
 msgstr "Avviso capacità rimanente"
 
+msgid "Renewing the Claude session…"
+msgstr "Rinnovo della sessione Claude…"
+
 msgid "reset imminent"
 msgstr "reset imminente"
 
@@ -163,6 +166,9 @@ msgstr "Dati non aggiornati · %s"
 
 msgid "The Claude Code credentials file is invalid."
 msgstr "Il file credenziali di Claude Code non è valido."
+
+msgid "The Claude session could not be renewed automatically. Retrying later."
+msgstr "Non è stato possibile rinnovare automaticamente la sessione Claude. Nuovo tentativo più tardi."
 
 msgid "The Claude session has expired. Sign in again."
 msgstr "La sessione Claude è scaduta. Accedi nuovamente."

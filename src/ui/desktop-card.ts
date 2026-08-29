@@ -86,7 +86,9 @@ export class DesktopCard {
 
     if (!state.snapshot) {
       this.content.add_child(new St.Label({
-        text: state.loading
+        text: state.renewing
+          ? _('Renewing the Claude session…')
+          : state.loading
           ? _('Loading…')
           : (state.error ? localizedError(state.errorCode, state.error) : _('Data unavailable')),
         style_class: 'claudeland-desktop-empty',

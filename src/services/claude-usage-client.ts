@@ -8,7 +8,7 @@ import {
   type UsageSnapshot,
   formatPlanLabel,
 } from '../domain/usage.js';
-import { ClaudeCredentials } from './claude-credentials.js';
+import type { ClaudeCredential } from '../domain/credential.js';
 import { ClaudelandError } from './errors.js';
 
 const USAGE_URL = 'https://api.anthropic.com/api/oauth/usage';
@@ -20,10 +20,15 @@ export class ClaudeUsageClient {
     user_agent: 'claudeland/0.1.0',
   });
 
-  constructor(private readonly credentials = new ClaudeCredentials()) {}
-
-  async fetch(options: NormalizeOptions = {}): Promise<UsageFetchResult> {
-    const credential = await this.credentials.read();
+  /**
+   * Performs one usage request with the credential it is given. Credential
+   * reading and session renewal belong to the caller, so a retry after a
+   * renewal is an ordinary second call with a fresher access token.
+   */
+  async fetch(
+    credential: ClaudeCredential,
+    options: NormalizeOptions = {},
+  ): Promise<UsageFetchResult> {
     const message = Soup.Message.new('GET', USAGE_URL);
     message.request_headers.append('Authorization', `Bearer ${credential.accessToken}`);
     message.request_headers.append('anthropic-beta', OAUTH_BETA);
