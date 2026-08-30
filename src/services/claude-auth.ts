@@ -100,11 +100,10 @@ export class ClaudeAuth {
     }
 
     const scopes = credential.scopes.length > 0 ? credential.scopes : FALLBACK_SCOPES;
-    this.renewal = this.spawnRenewal(credential.refreshToken, scopes.join(' '))
-      .finally(() => {
-        this.renewal = null;
-        this.renewalProcess = null;
-      });
+    this.renewal = this.spawnRenewal(credential.refreshToken, scopes.join(' ')).finally(() => {
+      this.renewal = null;
+      this.renewalProcess = null;
+    });
     return this.renewal;
   }
 
@@ -196,7 +195,9 @@ function waitCheck(process: Gio.Subprocess): Promise<boolean> {
   });
 }
 
-function communicateUtf8(process: Gio.Subprocess): Promise<[boolean, string | null, string | null]> {
+function communicateUtf8(
+  process: Gio.Subprocess,
+): Promise<[boolean, string | null, string | null]> {
   return new Promise((resolve, reject) => {
     process.communicate_utf8_async(null, null, (source, result) => {
       try {

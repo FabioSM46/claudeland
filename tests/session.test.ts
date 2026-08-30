@@ -112,8 +112,9 @@ describe('parseCredential', () => {
 
   it('rejects a file without an OAuth credential', () => {
     expect(() => parseCredential({})).toThrow(InvalidCredentialError);
-    expect(() => parseCredential({ claudeAiOauth: { accessToken: '' } }))
-      .toThrow(InvalidCredentialError);
+    expect(() => parseCredential({ claudeAiOauth: { accessToken: '' } })).toThrow(
+      InvalidCredentialError,
+    );
   });
 
   it('reports a non-object payload as invalid rather than missing', () => {

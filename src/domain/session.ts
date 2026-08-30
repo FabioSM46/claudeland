@@ -29,10 +29,7 @@ export interface SessionTiming {
  */
 export const ACCESS_TOKEN_SKEW_MS = 5 * 60 * 1000;
 
-export function evaluateSession(
-  timing: SessionTiming,
-  now: number = Date.now(),
-): SessionState {
+export function evaluateSession(timing: SessionTiming, now: number = Date.now()): SessionState {
   if (isAccessTokenUsable(timing, now)) {
     return 'valid';
   }
@@ -43,10 +40,7 @@ export function evaluateSession(
  * True while the access token is still worth sending. An unknown expiry is
  * treated as usable: the server answer, not a guess, decides.
  */
-export function isAccessTokenUsable(
-  timing: SessionTiming,
-  now: number = Date.now(),
-): boolean {
+export function isAccessTokenUsable(timing: SessionTiming, now: number = Date.now()): boolean {
   if (timing.accessTokenExpiresAt === null) {
     return true;
   }
@@ -58,10 +52,7 @@ export function isAccessTokenUsable(
  * expiry is treated as renewable: attempting costs one CLI call and the CLI is
  * the authority on whether the token still works.
  */
-export function canRenew(
-  timing: SessionTiming,
-  now: number = Date.now(),
-): boolean {
+export function canRenew(timing: SessionTiming, now: number = Date.now()): boolean {
   if (!timing.hasRefreshToken) {
     return false;
   }

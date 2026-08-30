@@ -22,15 +22,10 @@ await cp(
 run('glib-compile-schemas', [resolve(dist, 'schemas')]);
 
 for (const language of ['it']) {
-  const po = gettextParser.po.parse(
-    await readFile(resolve(root, `po/${language}.po`)),
-  );
+  const po = gettextParser.po.parse(await readFile(resolve(root, `po/${language}.po`)));
   const localeDirectory = resolve(dist, `locale/${language}/LC_MESSAGES`);
   await mkdir(localeDirectory, { recursive: true });
-  await writeFile(
-    resolve(localeDirectory, 'claudeland.mo'),
-    gettextParser.mo.compile(po),
-  );
+  await writeFile(resolve(localeDirectory, 'claudeland.mo'), gettextParser.mo.compile(po));
 }
 
 const metadataPath = resolve(dist, 'metadata.json');

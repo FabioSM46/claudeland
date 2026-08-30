@@ -17,7 +17,7 @@ const OAUTH_BETA = 'oauth-2025-04-20';
 export class ClaudeUsageClient {
   private readonly session = new Soup.Session({
     timeout: 20,
-    user_agent: 'claudeland/0.1.0',
+    user_agent: 'claudeland/0.2.0',
   });
 
   /**
@@ -58,10 +58,7 @@ export class ClaudeUsageClient {
       );
     }
     if (status >= 500) {
-      throw new ClaudelandError(
-        'server-error',
-        `Anthropic is unavailable (HTTP ${status}).`,
-      );
+      throw new ClaudelandError('server-error', `Anthropic is unavailable (HTTP ${status}).`);
     }
     if (status < 200 || status >= 300) {
       throw new ClaudelandError(
@@ -78,19 +75,13 @@ export class ClaudeUsageClient {
       const payload = JSON.parse(new TextDecoder().decode(data)) as unknown;
       return {
         snapshot: normalizeUsage(payload, options),
-        planLabel: formatPlanLabel(
-          credential.subscriptionType,
-          credential.rateLimitTier,
-        ),
+        planLabel: formatPlanLabel(credential.subscriptionType, credential.rateLimitTier),
       };
     } catch (error) {
       if (error instanceof InvalidUsagePayloadError) {
         throw new ClaudelandError('invalid-response', error.message);
       }
-      throw new ClaudelandError(
-        'invalid-response',
-        'Anthropic returned an invalid response.',
-      );
+      throw new ClaudelandError('invalid-response', 'Anthropic returned an invalid response.');
     }
   }
 

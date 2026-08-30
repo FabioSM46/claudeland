@@ -96,15 +96,17 @@ describe('formatting', () => {
     expect(severityFor(10)).toBe('critical');
     expect(severityFor(25)).toBe('warning');
     expect(severityFor(26)).toBe('ok');
-    expect(compactLimitLabel({
-      id: 'seven_day_fable',
-      label: 'Weekly · Fable',
-      consumedPercent: 5,
-      remainingPercent: 95,
-      resetsAt: null,
-      scopeModel: 'Fable',
-      severity: 'ok',
-    })).toBe('F');
+    expect(
+      compactLimitLabel({
+        id: 'seven_day_fable',
+        label: 'Weekly · Fable',
+        consumedPercent: 5,
+        remainingPercent: 95,
+        resetsAt: null,
+        scopeModel: 'Fable',
+        severity: 'ok',
+      }),
+    ).toBe('F');
   });
 
   it('supports injected system translations without coupling the domain to GNOME', () => {
@@ -113,16 +115,19 @@ describe('formatting', () => {
       'resets in %dh %dm': 'reset tra %dh %dm',
     };
     const translate = (message: string) => translations[message] ?? message;
-    expect(localizedLimitLabel({
-      id: 'seven_day_fable',
-      label: 'Weekly · Fable',
-      scopeModel: 'Fable',
-    }, translate)).toBe('Settimanale · Fable');
-    expect(formatTimeRemaining(
-      '2030-01-01T15:00:00Z',
-      new Date('2030-01-01T10:00:00Z'),
-      translate,
-    )).toBe('reset tra 5h 0m');
+    expect(
+      localizedLimitLabel(
+        {
+          id: 'seven_day_fable',
+          label: 'Weekly · Fable',
+          scopeModel: 'Fable',
+        },
+        translate,
+      ),
+    ).toBe('Settimanale · Fable');
+    expect(
+      formatTimeRemaining('2030-01-01T15:00:00Z', new Date('2030-01-01T10:00:00Z'), translate),
+    ).toBe('reset tra 5h 0m');
   });
 
   it('formats Claude plan tiers from credential metadata', () => {

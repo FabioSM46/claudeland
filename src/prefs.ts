@@ -24,24 +24,30 @@ export default class ClaudelandPreferences extends ExtensionPreferences {
     });
     page.add(appearance);
 
-    appearance.add(boundSwitch(
-      settings,
-      'show-panel',
-      _('Panel indicator'),
-      _('Show percentages in the GNOME top bar.'),
-    ));
-    appearance.add(boundSwitch(
-      settings,
-      'compact-panel',
-      _('Compact panel'),
-      _('Show only the limit with the least remaining capacity.'),
-    ));
-    appearance.add(boundSwitch(
-      settings,
-      'show-desktop-widget',
-      _('Desktop card'),
-      _('Show a non-interactive card below application windows.'),
-    ));
+    appearance.add(
+      boundSwitch(
+        settings,
+        'show-panel',
+        _('Panel indicator'),
+        _('Show percentages in the GNOME top bar.'),
+      ),
+    );
+    appearance.add(
+      boundSwitch(
+        settings,
+        'compact-panel',
+        _('Compact panel'),
+        _('Show only the limit with the least remaining capacity.'),
+      ),
+    );
+    appearance.add(
+      boundSwitch(
+        settings,
+        'show-desktop-widget',
+        _('Desktop card'),
+        _('Show a non-interactive card below application windows.'),
+      ),
+    );
 
     const positionRow = new Adw.ComboRow({
       title: _('Card position'),
@@ -53,9 +59,10 @@ export default class ClaudelandPreferences extends ExtensionPreferences {
         _('Bottom left'),
       ]),
     });
-    positionRow.selected = Math.max(0, POSITIONS.indexOf(
-      settings.get_string('desktop-position') as typeof POSITIONS[number],
-    ));
+    positionRow.selected = Math.max(
+      0,
+      POSITIONS.indexOf(settings.get_string('desktop-position') as (typeof POSITIONS)[number]),
+    );
     positionRow.connect('notify::selected', () => {
       settings.set_string('desktop-position', POSITIONS[positionRow.selected] ?? 'top-right');
     });
@@ -65,33 +72,39 @@ export default class ClaudelandPreferences extends ExtensionPreferences {
       title: _('Updates and thresholds'),
     });
     page.add(behavior);
-    behavior.add(boundSpin(
-      settings,
-      'refresh-interval',
-      _('Refresh interval'),
-      _('Minutes between usage requests.'),
-      1,
-      60,
-      1,
-    ));
-    behavior.add(boundSpin(
-      settings,
-      'warning-remaining',
-      _('Remaining capacity warning'),
-      _('Use the warning color below this percentage.'),
-      1,
-      99,
-      1,
-    ));
-    behavior.add(boundSpin(
-      settings,
-      'critical-remaining',
-      _('Critical remaining capacity'),
-      _('Use the critical color below this percentage.'),
-      0,
-      98,
-      1,
-    ));
+    behavior.add(
+      boundSpin(
+        settings,
+        'refresh-interval',
+        _('Refresh interval'),
+        _('Minutes between usage requests.'),
+        1,
+        60,
+        1,
+      ),
+    );
+    behavior.add(
+      boundSpin(
+        settings,
+        'warning-remaining',
+        _('Remaining capacity warning'),
+        _('Use the warning color below this percentage.'),
+        1,
+        99,
+        1,
+      ),
+    );
+    behavior.add(
+      boundSpin(
+        settings,
+        'critical-remaining',
+        _('Critical remaining capacity'),
+        _('Use the critical color below this percentage.'),
+        0,
+        98,
+        1,
+      ),
+    );
 
     const account = new Adw.PreferencesGroup({
       title: _('Claude account'),

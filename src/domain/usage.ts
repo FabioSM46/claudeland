@@ -46,10 +46,7 @@ const PRIORITY: Record<string, number> = {
   extra_usage: 3,
 };
 
-export function normalizeUsage(
-  payload: unknown,
-  options: NormalizeOptions = {},
-): UsageSnapshot {
+export function normalizeUsage(payload: unknown, options: NormalizeOptions = {}): UsageSnapshot {
   if (!isRecord(payload)) {
     throw new InvalidUsagePayloadError('Claude usage response is not an object');
   }
@@ -225,10 +222,7 @@ function collectCandidates(payload: UnknownRecord): Array<[string, UnknownRecord
   return candidates;
 }
 
-function collectNested(
-  value: unknown,
-  candidates: Array<[string, UnknownRecord]>,
-): void {
+function collectNested(value: unknown, candidates: Array<[string, UnknownRecord]>): void {
   if (Array.isArray(value)) {
     for (const entry of value) {
       if (isRecord(entry)) {

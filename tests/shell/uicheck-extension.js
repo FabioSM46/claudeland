@@ -55,8 +55,10 @@ function checkProgressBars(indicator) {
   for (const [index, track] of tracks.entries()) {
     const fill = track.get_first_child();
     const actualFraction = fill?.width / track.width;
-    if (!Number.isFinite(actualFraction)
-        || Math.abs(actualFraction - expectedFractions[index]) > 0.01) {
+    if (
+      !Number.isFinite(actualFraction) ||
+      Math.abs(actualFraction - expectedFractions[index]) > 0.01
+    ) {
       failures.push(
         `progress ${index} is ${fill?.width ?? 'missing'}/${track.width}px, expected ${expectedFractions[index] * 100}%`,
       );
@@ -84,19 +86,25 @@ function checkStacking() {
 
   const owner = groups.find((group) => group.get_children().some(isCard));
   if (!owner) {
-    return [siblings.some(isCard)
-      ? 'the desktop card is a sibling of the window actors instead of a child of the wallpaper group'
-      : 'the desktop card was not added to the wallpaper group'];
+    return [
+      siblings.some(isCard)
+        ? 'the desktop card is a sibling of the window actors instead of a child of the wallpaper group'
+        : 'the desktop card was not added to the wallpaper group',
+    ];
   }
 
   const failures = [];
   const children = owner.get_children();
   console.log(`CLAUDELAND UI LAYERS: ${children.map(typeName).join(',')}`);
   if (children.length < 2) {
-    failures.push('the wallpaper group holds no wallpaper actor, so the card layering is unverifiable');
+    failures.push(
+      'the wallpaper group holds no wallpaper actor, so the card layering is unverifiable',
+    );
   }
   if (!isCard(children[children.length - 1])) {
-    failures.push(`the desktop card is not on top of the wallpaper (${children.map(typeName).join(',')})`);
+    failures.push(
+      `the desktop card is not on top of the wallpaper (${children.map(typeName).join(',')})`,
+    );
   }
 
   const groupIndex = siblings.indexOf(owner);
@@ -106,7 +114,9 @@ function checkStacking() {
   if (windowIndexes.length === 0) {
     failures.push('no window appeared, so the card stacking could not be verified');
   } else if (groupIndex > Math.min(...windowIndexes)) {
-    failures.push(`the desktop card is not below application windows (wallpaper group ${groupIndex}, windows ${windowIndexes.join(',')})`);
+    failures.push(
+      `the desktop card is not below application windows (wallpaper group ${groupIndex}, windows ${windowIndexes.join(',')})`,
+    );
   }
   return failures;
 }

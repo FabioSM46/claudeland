@@ -18,8 +18,10 @@ It never sends prompts, never creates conversations, and has no telemetry.
 Claudeland does not own an OAuth client. Authentication and token renewal are
 delegated to the Claude Code CLI the user already has installed, which is the
 only component allowed to hold the client identity and rotate the refresh
-token. That delegation is the reason for every `Gio.Subprocess` call, and there
-are exactly three. Each uses a fixed argument vector — no shell, no string
+token. That delegation accounts for three subprocess purposes, implemented at
+four call sites: status and renewal run in the Shell process, while interactive
+sign-in is available from both the Shell menu and the separate preferences
+process. Every call uses a fixed argument vector — no shell, no string
 interpolation, and no value that a network response or a setting can influence.
 
 ### 1. `claude auth status --json`
@@ -53,19 +55,23 @@ that call only: it is never written to GSettings, to a file, or to the journal.
 
 Launched in the user's terminal (`kgx`, `gnome-terminal`, or
 `x-terminal-emulator`) from an explicit menu item, so the browser sign-in is
-Anthropic's own flow and the user can see it. Never launched automatically.
+Anthropic's own flow and the user can see it. The same fixed command is exposed
+from the preferences window, which runs in a separate GTK process. It is never
+launched automatically. The user-initiated terminal is intentionally allowed
+to remain open until authentication finishes, even if the extension is disabled.
 
 ## Other points a reviewer usually checks
 
 - **No synchronous work on the main loop.** File reads use
-  `load_contents_async`, HTTP uses `Soup.Session.send_and_read_async`, and both
-  subprocess calls use the async `communicate_utf8_async` / `wait_check_async`
-  variants.
+  `load_contents_async`, HTTP uses `Soup.Session.send_and_read_async`, and the
+  status and renewal paths use the async `communicate_utf8_async` /
+  `wait_check_async` variants. Interactive sign-in returns immediately after
+  launching the user's terminal.
 - **Cleanup.** `disable()` destroys the indicator, the desktop card, and the
   controller. The controller removes its `GLib` timeout, disconnects listeners,
   force-exits any subprocess still running, and aborts the `Soup.Session`.
-  Signals are connected with `connectObject()` and released with
-  `disconnectObject()`.
+  Shell signals use `connectObject()`; they are released by destroying their
+  owning actor or by an explicit `disconnectObject()` during cleanup.
 - **No eval and no remote code.** Nothing is downloaded and executed; the only
   network response is JSON, which is treated as untrusted and normalised in
   `domain/usage.js`.

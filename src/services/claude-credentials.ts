@@ -19,11 +19,7 @@ export class ClaudeCredentials {
   private readonly path: string;
 
   constructor(path?: string) {
-    this.path = path ?? GLib.build_filenamev([
-      GLib.get_home_dir(),
-      '.claude',
-      '.credentials.json',
-    ]);
+    this.path = path ?? GLib.build_filenamev([GLib.get_home_dir(), '.claude', '.credentials.json']);
   }
 
   async read(): Promise<ClaudeCredential> {

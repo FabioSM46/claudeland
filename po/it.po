@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Claudeland 0.1.0\n"
+"Project-Id-Version: Claudeland 0.2.0\n"
 "Report-Msgid-Bugs-To: https://github.com/FabioSM46/claudeland/issues\n"
 "Language: it\n"
 "MIME-Version: 1.0\n"

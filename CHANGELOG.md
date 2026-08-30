@@ -6,6 +6,8 @@ the project follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-08-30
+
 ### Added
 
 - Automatic session renewal. When the Claude access token has expired, or an
@@ -35,8 +37,10 @@ the project follows [Semantic Versioning](https://semver.org/).
   after the card on every supported GNOME Shell release.
 - Align lifecycle, signal cleanup, imports, and actor orientation with current
   GNOME Extensions review guidance.
+- Apply consistent source formatting with Prettier and verify it in `pnpm check`.
 - Prepare a minimal extensions.gnome.org package without unnecessary compiled
-  schemas or unreachable JavaScript.
+  schemas or unreachable JavaScript, verify release-version consistency, and
+  generate its SHA-256 checksum automatically.
 - Expand extension metadata with Claude Code, OAuth credential, Anthropic
   endpoint, and unofficial-project disclosures.
 
@@ -66,5 +70,6 @@ the project follows [Semantic Versioning](https://semver.org/).
 
 - Keep the usage popup open when selecting “Refresh now”.
 
-[Unreleased]: https://github.com/FabioSM46/claudeland/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/FabioSM46/claudeland/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/FabioSM46/claudeland/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/FabioSM46/claudeland/releases/tag/v0.1.0

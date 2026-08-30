@@ -1,6 +1,6 @@
 name: Bug report
 description: Report a reproducible Claudeland problem
-title: "bug: "
+title: 'bug: '
 labels: [bug]
 body:
   - type: markdown
@@ -10,7 +10,7 @@ body:
     id: shell
     attributes:
       label: GNOME Shell version
-      placeholder: "46.0"
+      placeholder: '46.0'
     validations:
       required: true
   - type: dropdown

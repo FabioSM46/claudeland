@@ -47,9 +47,11 @@ export class DesktopCard {
     // the card above the windows; it never reorders inside the background
     // group. Locating that group by its public type keeps the same parent the
     // shell uses without reaching for LayoutManager's private field.
-    this.backgroundGroup = global.window_group?.get_children()
-      .find((child): child is Meta.BackgroundGroup => child instanceof Meta.BackgroundGroup)
-      ?? null;
+    this.backgroundGroup =
+      global.window_group
+        ?.get_children()
+        .find((child): child is Meta.BackgroundGroup => child instanceof Meta.BackgroundGroup) ??
+      null;
     if (!this.backgroundGroup) {
       throw new Error('The GNOME Shell background group is unavailable');
     }
@@ -97,29 +99,37 @@ export class DesktopCard {
     }
 
     if (!state.snapshot) {
-      this.content.add_child(new St.Label({
-        text: state.renewing
-          ? _('Renewing the Claude session…')
-          : state.loading
-          ? _('Loading…')
-          : (state.error ? localizedError(state.errorCode, state.error) : _('Data unavailable')),
-        style_class: 'claudeland-desktop-empty',
-      }));
+      this.content.add_child(
+        new St.Label({
+          text: state.renewing
+            ? _('Renewing the Claude session…')
+            : state.loading
+              ? _('Loading…')
+              : state.error
+                ? localizedError(state.errorCode, state.error)
+                : _('Data unavailable'),
+          style_class: 'claudeland-desktop-empty',
+        }),
+      );
       this.queuePosition();
       return;
     }
 
     for (const limit of state.snapshot.limits) {
       const row = new St.BoxLayout({ style_class: 'claudeland-desktop-row' });
-      row.add_child(new St.Label({
-        text: localizedLimitLabel(limit, _),
-        x_expand: true,
-        style_class: 'claudeland-desktop-label',
-      }));
-      row.add_child(new St.Label({
-        text: formatPercent(limit.remainingPercent),
-        style_class: `claudeland-desktop-value claudeland-${limit.severity}`,
-      }));
+      row.add_child(
+        new St.Label({
+          text: localizedLimitLabel(limit, _),
+          x_expand: true,
+          style_class: 'claudeland-desktop-label',
+        }),
+      );
+      row.add_child(
+        new St.Label({
+          text: formatPercent(limit.remainingPercent),
+          style_class: `claudeland-desktop-value claudeland-${limit.severity}`,
+        }),
+      );
       this.content.add_child(row);
     }
     this.queuePosition();

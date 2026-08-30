@@ -111,10 +111,10 @@ export class UsageController {
         // The server is the authority on token validity: honour a 401 even
         // when the recorded expiry still looked fine.
         if (
-          !renewed
-          && error instanceof ClaudelandError
-          && error.code === 'unauthorized'
-          && canRenew(credential)
+          !renewed &&
+          error instanceof ClaudelandError &&
+          error.code === 'unauthorized' &&
+          canRenew(credential)
         ) {
           credential = await this.renewCredential(credential);
           if (this.client !== client) {
@@ -197,16 +197,10 @@ export class UsageController {
       if (error instanceof ClaudelandError && error.code === 'credentials-missing') {
         const status = await this.auth?.status();
         if (status && !status.installed) {
-          throw new ClaudelandError(
-            'claude-cli-missing',
-            'Install Claude Code to authenticate.',
-          );
+          throw new ClaudelandError('claude-cli-missing', 'Install Claude Code to authenticate.');
         }
         if (status && !status.loggedIn) {
-          throw new ClaudelandError(
-            'not-authenticated',
-            'Sign in to Claude Code to view usage.',
-          );
+          throw new ClaudelandError('not-authenticated', 'Sign in to Claude Code to view usage.');
         }
       }
       throw error;

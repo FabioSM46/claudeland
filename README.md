@@ -18,7 +18,7 @@ It displays remaining capacity for:
 
 ## Status
 
-The project is at `0.1.0` and targets GNOME Shell 46 and 50. Compatibility is
+The project is at `0.2.0` and targets GNOME Shell 46 and 50. Compatibility is
 checked against GNOME Shell 50 type definitions, with runtime smoke tests on
 both declared Shell releases.
 
@@ -56,10 +56,10 @@ claude auth login --claudeai
 Claudeland never asks for browser cookies and does not save a second copy of
 your credential.
 
-## Install the pre-release
+## Install the release
 
 Download these two assets from the
-[v0.1.0 pre-release](https://github.com/FabioSM46/claudeland/releases/tag/v0.1.0):
+[v0.2.0 release](https://github.com/FabioSM46/claudeland/releases/tag/v0.2.0):
 
 - `claudeland@fabiosm46.dev.shell-extension.zip`;
 - `claudeland@fabiosm46.dev.shell-extension.zip.sha256`.
@@ -105,7 +105,7 @@ Then follow the same logout, enable, and verification steps shown above.
 
 ## Update
 
-For a pre-release installation, download the assets for the newer version,
+For a release installation, download the assets for the newer version,
 verify the checksum, and run `gnome-extensions install --force` again.
 
 For a source installation, update the checkout and reinstall the extension:
@@ -129,17 +129,18 @@ gnome-extensions uninstall claudeland@fabiosm46.dev
 
 ## Commands
 
-| Command | Purpose |
-|---|---|
-| `pnpm build` | Transpile GJS code and copy extension assets |
-| `pnpm check` | Lint, typecheck, test, and build |
-| `pnpm test` | Run parser/domain unit tests |
-| `pnpm verify:gjs` | Run the domain smoke test under GJS |
-| `pnpm verify:session` | Exercise credential reading and session renewal under GJS |
-| `pnpm verify:shell` | Verify the built extension on every declared GNOME Shell release |
-| `pnpm dev:install` | Build and install into the user extension directory |
-| `pnpm package` | Produce an installable extension ZIP in `build/` |
-| `pnpm clean` | Remove generated `dist/`, `build/`, and `coverage/` |
+| Command               | Purpose                                                          |
+| --------------------- | ---------------------------------------------------------------- |
+| `pnpm build`          | Transpile GJS code and copy extension assets                     |
+| `pnpm check`          | Check formatting, lint, typecheck, test, and build               |
+| `pnpm format`         | Format supported source and documentation files with Prettier    |
+| `pnpm test`           | Run parser/domain unit tests                                     |
+| `pnpm verify:gjs`     | Run the domain smoke test under GJS                              |
+| `pnpm verify:session` | Exercise credential reading and session renewal under GJS        |
+| `pnpm verify:shell`   | Verify the built extension on every declared GNOME Shell release |
+| `pnpm dev:install`    | Build and install into the user extension directory              |
+| `pnpm package`        | Produce an extension ZIP and SHA-256 checksum in `build/`        |
+| `pnpm clean`          | Remove generated `dist/`, `build/`, and `coverage/`              |
 
 ## Testing the UI
 

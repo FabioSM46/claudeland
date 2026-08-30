@@ -1,6 +1,6 @@
 {
   "name": "claudeland",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "GNOME Shell extension for remaining Claude plan usage on Ubuntu Wayland",
   "type": "module",
   "private": true,
@@ -13,9 +13,11 @@
   "packageManager": "pnpm@10.15.0",
   "scripts": {
     "build": "node scripts/build.mjs",
-    "check": "pnpm lint && pnpm typecheck && pnpm test && pnpm build",
+    "check": "pnpm format:check && pnpm lint && pnpm typecheck && pnpm test && pnpm build",
     "clean": "node scripts/clean.mjs",
     "dev:install": "node scripts/install.mjs",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "lint": "eslint .",
     "package": "pnpm build && node scripts/pack.mjs",
     "test": "vitest run",
@@ -36,6 +38,7 @@
     "@types/node": "^24.3.0",
     "eslint": "^10.9.1",
     "gettext-parser": "^9.1.1",
+    "prettier": "^3.9.6",
     "typescript": "^5.9.2",
     "typescript-eslint": "^8.42.0",
     "vitest": "^4.1.11"

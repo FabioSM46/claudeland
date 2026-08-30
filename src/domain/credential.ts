@@ -33,10 +33,7 @@ export interface ClaudeCredential extends SessionTiming {
 
 export function parseCredential(payload: unknown): ClaudeCredential {
   if (!isRecord(payload)) {
-    throw new InvalidCredentialError(
-      'invalid',
-      'The Claude Code credentials file is invalid.',
-    );
+    throw new InvalidCredentialError('invalid', 'The Claude Code credentials file is invalid.');
   }
 
   const oauth = payload.claudeAiOauth;

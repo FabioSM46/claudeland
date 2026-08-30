@@ -1,10 +1,7 @@
 import Gio from 'gi://Gio';
 
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
-import {
-  Extension,
-  gettext as _,
-} from 'resource:///org/gnome/shell/extensions/extension.js';
+import { Extension, gettext as _ } from 'resource:///org/gnome/shell/extensions/extension.js';
 
 import { UsageController } from './services/usage-controller.js';
 import { DesktopCard } from './ui/desktop-card.js';
@@ -20,14 +17,31 @@ export default class ClaudelandExtension extends Extension {
     this.settings = this.getSettings();
     this.controller = new UsageController(this.settings);
 
+    this.settings.connectObject('changed::show-panel', () => this.syncSurfaces(), this);
+    this.settings.connectObject('changed::show-desktop-widget', () => this.syncSurfaces(), this);
     this.settings.connectObject(
-      'changed::show-panel', () => this.syncSurfaces(),
-      'changed::show-desktop-widget', () => this.syncSurfaces(),
-      'changed::desktop-position', () => this.recreateDesktopCard(),
-      'changed::compact-panel', () => void this.controller?.refresh(),
-      'changed::refresh-interval', () => void this.controller?.refresh(),
-      'changed::warning-remaining', () => void this.controller?.refresh(),
-      'changed::critical-remaining', () => void this.controller?.refresh(),
+      'changed::desktop-position',
+      () => this.recreateDesktopCard(),
+      this,
+    );
+    this.settings.connectObject(
+      'changed::compact-panel',
+      () => void this.controller?.refresh(),
+      this,
+    );
+    this.settings.connectObject(
+      'changed::refresh-interval',
+      () => void this.controller?.refresh(),
+      this,
+    );
+    this.settings.connectObject(
+      'changed::warning-remaining',
+      () => void this.controller?.refresh(),
+      this,
+    );
+    this.settings.connectObject(
+      'changed::critical-remaining',
+      () => void this.controller?.refresh(),
       this,
     );
 
@@ -54,10 +68,8 @@ export default class ClaudelandExtension extends Extension {
 
     const showPanel = this.settings.get_boolean('show-panel');
     if (showPanel && !this.indicator) {
-      this.indicator = new UsageIndicator(
-        this.controller,
-        this.settings,
-        () => this.openPreferences(),
+      this.indicator = new UsageIndicator(this.controller, this.settings, () =>
+        this.openPreferences(),
       );
       Main.panel.addToStatusArea(this.uuid, this.indicator);
     } else if (!showPanel && this.indicator) {

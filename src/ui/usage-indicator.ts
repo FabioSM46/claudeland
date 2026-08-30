@@ -38,10 +38,12 @@ class UsageIndicatorImpl extends PanelMenu.Button {
       style_class: 'panel-status-menu-box claudeland-panel',
       y_align: Clutter.ActorAlign.CENTER,
     });
-    box.add_child(new St.Icon({
-      icon_name: 'network-transmit-receive-symbolic',
-      style_class: 'system-status-icon claudeland-panel-icon',
-    }));
+    box.add_child(
+      new St.Icon({
+        icon_name: 'network-transmit-receive-symbolic',
+        style_class: 'system-status-icon claudeland-panel-icon',
+      }),
+    );
     this.panelLabel = new St.Label({
       text: formatMessage(_('Claude %s'), '--'),
       y_align: Clutter.ActorAlign.CENTER,
@@ -62,16 +64,20 @@ class UsageIndicatorImpl extends PanelMenu.Button {
     this.popupMenu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
 
     this.loginItem = new PopupMenu.PopupMenuItem(_('Sign in / renew session'));
-    this.loginItem.connectObject('activate', () => {
-      try {
-        this.controller.launchLogin();
-      } catch (error) {
-        Main.notifyError(
-          _('Claudeland'),
-          _(error instanceof Error ? error.message : String(error)),
-        );
-      }
-    }, this);
+    this.loginItem.connectObject(
+      'activate',
+      () => {
+        try {
+          this.controller.launchLogin();
+        } catch (error) {
+          Main.notifyError(
+            _('Claudeland'),
+            _(error instanceof Error ? error.message : String(error)),
+          );
+        }
+      },
+      this,
+    );
     this.popupMenu.addMenuItem(this.loginItem);
 
     const refreshItem = new PopupMenu.PopupMenuItem(_('Refresh now'));
@@ -107,15 +113,17 @@ class UsageIndicatorImpl extends PanelMenu.Button {
 
     const suffix = state.stale ? ' *' : '';
     if (this.settings.get_boolean('compact-panel')) {
-      const worst = [...state.snapshot.limits]
-        .sort((left, right) => left.remainingPercent - right.remainingPercent)[0];
+      const worst = [...state.snapshot.limits].sort(
+        (left, right) => left.remainingPercent - right.remainingPercent,
+      )[0];
       this.panelLabel.text = `Claude ${formatPercent(worst.remainingPercent)}${suffix}`;
       return;
     }
 
-    this.panelLabel.text = state.snapshot.limits
-      .map((limit) => `${compactLimitLabel(limit)} ${formatPercent(limit.remainingPercent)}`)
-      .join(' · ') + suffix;
+    this.panelLabel.text =
+      state.snapshot.limits
+        .map((limit) => `${compactLimitLabel(limit)} ${formatPercent(limit.remainingPercent)}`)
+        .join(' · ') + suffix;
   }
 
   private renderMenu(state: Readonly<UsageState>): void {
@@ -127,9 +135,7 @@ class UsageIndicatorImpl extends PanelMenu.Button {
       this.statusItem.label.text = _('Loading Claude usage…');
     } else if (state.error) {
       const error = localizedError(state.errorCode, state.error);
-      this.statusItem.label.text = state.stale
-        ? formatMessage(_('Stale data · %s'), error)
-        : error;
+      this.statusItem.label.text = state.stale ? formatMessage(_('Stale data · %s'), error) : error;
     } else if (state.snapshot) {
       const updated = new Date(state.snapshot.fetchedAt).toLocaleTimeString([], {
         hour: '2-digit',
@@ -140,9 +146,7 @@ class UsageIndicatorImpl extends PanelMenu.Button {
         state.planLabel ?? _('Claude plan'),
         updated,
       );
-      this.statusItem.label.text = state.stale
-        ? formatMessage(_('%s · stale'), title)
-        : title;
+      this.statusItem.label.text = state.stale ? formatMessage(_('%s · stale'), title) : title;
     }
 
     if (state.snapshot) {
@@ -151,11 +155,12 @@ class UsageIndicatorImpl extends PanelMenu.Button {
       }
     }
 
-    const needsLogin = state.errorCode === 'not-authenticated'
-      || state.errorCode === 'credentials-missing'
-      || state.errorCode === 'credentials-expired'
-      || state.errorCode === 'renewal-failed'
-      || state.errorCode === 'unauthorized';
+    const needsLogin =
+      state.errorCode === 'not-authenticated' ||
+      state.errorCode === 'credentials-missing' ||
+      state.errorCode === 'credentials-expired' ||
+      state.errorCode === 'renewal-failed' ||
+      state.errorCode === 'unauthorized';
     this.loginItem.visible = needsLogin;
   }
 }
@@ -180,11 +185,13 @@ function createLimitRow(limit: UsageLimit): PopupMenu.PopupBaseMenuItem {
   });
   setBoxLayoutVertical(content);
   const header = new St.BoxLayout({ x_expand: true });
-  header.add_child(new St.Label({
-    text: localizedLimitLabel(limit, _),
-    x_expand: true,
-    style_class: 'claudeland-limit-label',
-  }));
+  header.add_child(
+    new St.Label({
+      text: localizedLimitLabel(limit, _),
+      x_expand: true,
+      style_class: 'claudeland-limit-label',
+    }),
+  );
   const value = new St.Label({
     text: formatMessage(_('%s remaining'), formatPercent(limit.remainingPercent)),
     style_class: `claudeland-limit-value claudeland-${limit.severity}`,
@@ -204,13 +211,15 @@ function createLimitRow(limit: UsageLimit): PopupMenu.PopupBaseMenuItem {
   // A vertical BoxLayout stretches the track across the row. Derive the fill
   // from that allocated width instead of assuming the track stayed at its CSS
   // preferred width. This signal disappears with the track actor itself.
-  track.connect('notify::width', updateFillWidth);
+  track.connectObject('notify::width', updateFillWidth, fill);
   updateFillWidth();
   content.add_child(track);
-  content.add_child(new St.Label({
-    text: formatTimeRemaining(limit.resetsAt, new Date(), _),
-    style_class: 'claudeland-reset-label',
-  }));
+  content.add_child(
+    new St.Label({
+      text: formatTimeRemaining(limit.resetsAt, new Date(), _),
+      style_class: 'claudeland-reset-label',
+    }),
+  );
 
   item.add_child(content);
   return item;

@@ -60,16 +60,16 @@ order. No actor, signal, or GLib timer may survive `disable()`.
 
 ## Error policy
 
-| Condition | Behavior |
-|---|---|
-| Claude CLI missing | Show installation guidance; no login action |
-| Not authenticated | Show an explicit login action |
-| Access token expired, refresh token valid | Renew through the CLI, retry once, no login prompt |
-| Renewal failed | Preserve last data, offer login, back off for 15 minutes |
-| Refresh token missing or expired / HTTP 401 after renewal | Preserve last data, request login |
-| HTTP 429 | Preserve last data, apply polling backoff |
-| Offline / 5xx | Preserve last data and mark it stale |
-| Invalid response | Reject snapshot; never partially trust it |
+| Condition                                                 | Behavior                                                 |
+| --------------------------------------------------------- | -------------------------------------------------------- |
+| Claude CLI missing                                        | Show installation guidance; no login action              |
+| Not authenticated                                         | Show an explicit login action                            |
+| Access token expired, refresh token valid                 | Renew through the CLI, retry once, no login prompt       |
+| Renewal failed                                            | Preserve last data, offer login, back off for 15 minutes |
+| Refresh token missing or expired / HTTP 401 after renewal | Preserve last data, request login                        |
+| HTTP 429                                                  | Preserve last data, apply polling backoff                |
+| Offline / 5xx                                             | Preserve last data and mark it stale                     |
+| Invalid response                                          | Reject snapshot; never partially trust it                |
 
 ## Compatibility
 

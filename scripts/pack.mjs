@@ -1,6 +1,7 @@
-import { mkdir, readFile, rm } from 'node:fs/promises';
+import { createHash } from 'node:crypto';
+import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { spawnSync } from 'node:child_process';
-import { resolve } from 'node:path';
+import { basename, resolve } from 'node:path';
 
 const root = resolve(import.meta.dirname, '..');
 const build = resolve(root, 'build');
@@ -13,7 +14,8 @@ const result = spawnSync(
   [
     'pack',
     '--force',
-    '--out-dir', build,
+    '--out-dir',
+    build,
     '--extra-source=LICENSE',
     '--extra-source=domain',
     '--extra-source=locale',
@@ -28,6 +30,14 @@ if (result.status !== 0) {
 }
 
 const metadata = JSON.parse(await readFile(resolve(root, 'metadata.json'), 'utf8'));
+const packageMetadata = JSON.parse(await readFile(resolve(root, 'package.json'), 'utf8'));
+if (metadata['version-name'] !== packageMetadata.version) {
+  console.error(
+    `metadata.json version-name (${metadata['version-name'] ?? 'missing'}) ` +
+      `does not match package.json version (${packageMetadata.version})`,
+  );
+  process.exit(1);
+}
 const archive = resolve(build, `${metadata.uuid}.shell-extension.zip`);
 let listing = run('unzip', ['-Z1', archive], true).stdout.trim().split('\n');
 if (listing.includes('schemas/gschemas.compiled')) {
@@ -46,7 +56,14 @@ if (!listing.includes('LICENSE')) {
   process.exit(1);
 }
 
+const checksum = createHash('sha256')
+  .update(await readFile(archive))
+  .digest('hex');
+const checksumPath = `${archive}.sha256`;
+await writeFile(checksumPath, `${checksum}  ${basename(archive)}\n`);
+
 console.log(`Packed and verified extension in ${archive}`);
+console.log(`Wrote SHA-256 checksum to ${checksumPath}`);
 
 function run(command, args, capture = false) {
   const commandResult = spawnSync(command, args, {

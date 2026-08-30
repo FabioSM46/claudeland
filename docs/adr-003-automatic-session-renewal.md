@@ -20,7 +20,7 @@ Three renewal strategies were considered.
    of the credential file would all become Claudeland's problem.
 2. Ask the CLI for a refresh. There is no `claude auth refresh` in 2.1.251.
    `claude auth status` performs no renewal at all — it reports `loggedIn:
-   true` even when the access token has expired — and the only implicit
+true` even when the access token has expired — and the only implicit
    renewal happens when a full agent session starts, which is far too heavy to
    run from a GNOME Shell extension on a timer.
 3. Use the CLI's non-interactive login environment,

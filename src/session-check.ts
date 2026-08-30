@@ -41,17 +41,20 @@ function read(path: string): string {
 }
 
 function writeCredentials(accessTokenExpiresAt: number): void {
-  write(credentialsPath, JSON.stringify({
-    claudeAiOauth: {
-      accessToken: ACCESS_TOKEN,
-      refreshToken: REFRESH_TOKEN,
-      expiresAt: accessTokenExpiresAt,
-      refreshTokenExpiresAt: Date.now() + 30 * 24 * HOUR_MS,
-      scopes: ['user:profile', 'user:inference'],
-      subscriptionType: 'max',
-      rateLimitTier: 'default_claude_max_5x',
-    },
-  }));
+  write(
+    credentialsPath,
+    JSON.stringify({
+      claudeAiOauth: {
+        accessToken: ACCESS_TOKEN,
+        refreshToken: REFRESH_TOKEN,
+        expiresAt: accessTokenExpiresAt,
+        refreshTokenExpiresAt: Date.now() + 30 * 24 * HOUR_MS,
+        scopes: ['user:profile', 'user:inference'],
+        subscriptionType: 'max',
+        rateLimitTier: 'default_claude_max_5x',
+      },
+    }),
+  );
 }
 
 /**
@@ -80,7 +83,9 @@ function installStubCli(outcome: 'success' | 'failure'): void {
     '"scopes":["user:profile","user:inference"],"subscriptionType":"max"}}',
     'JSON',
     'exit 0',
-  ].filter((line) => line !== '').join('\n');
+  ]
+    .filter((line) => line !== '')
+    .join('\n');
 
   const path = `${binDirectory}/claude`;
   write(path, `${stub}\n`);
@@ -118,10 +123,7 @@ async function main(): Promise<void> {
   check(await auth.renew(expired), 'the CLI reports a successful renewal');
 
   const renewed = await credentials.read();
-  check(
-    evaluateSession(renewed) === 'valid',
-    'the renewed credential is usable again',
-  );
+  check(evaluateSession(renewed) === 'valid', 'the renewed credential is usable again');
   check(renewed.accessToken !== ACCESS_TOKEN, 'the access token was replaced by the CLI');
 
   const invocation = read(argvLogPath);
@@ -146,15 +148,15 @@ async function main(): Promise<void> {
   // A refused renewal must be reported, not thrown, so the caller can back off.
   writeCredentials(Date.now() - HOUR_MS);
   installStubCli('failure');
-  check(
-    !(await auth.renew(await credentials.read())),
-    'a refused renewal resolves as a failure',
-  );
+  check(!(await auth.renew(await credentials.read())), 'a refused renewal resolves as a failure');
 
   // Without a refresh token there is nothing to delegate.
-  write(credentialsPath, JSON.stringify({
-    claudeAiOauth: { accessToken: ACCESS_TOKEN, expiresAt: Date.now() - HOUR_MS },
-  }));
+  write(
+    credentialsPath,
+    JSON.stringify({
+      claudeAiOauth: { accessToken: ACCESS_TOKEN, expiresAt: Date.now() - HOUR_MS },
+    }),
+  );
   const withoutRefresh = await credentials.read();
   check(
     evaluateSession(withoutRefresh) === 'expired',
@@ -171,7 +173,7 @@ async function main(): Promise<void> {
   let fetchedWithRotatedCredential = false;
   const controller = new UsageController(
     {
-      get_uint: (key: string) => key === 'refresh-interval' ? 5 : 20,
+      get_uint: (key: string) => (key === 'refresh-interval' ? 5 : 20),
     } as unknown as Gio.Settings,
     {
       credentials: {
@@ -181,9 +183,8 @@ async function main(): Promise<void> {
             accessToken: credentialRead === 1 ? ACCESS_TOKEN : 'rotated-access-token',
             refreshToken: REFRESH_TOKEN,
             hasRefreshToken: true,
-            accessTokenExpiresAt: credentialRead === 1
-              ? Date.now() - HOUR_MS
-              : Date.now() + 8 * HOUR_MS,
+            accessTokenExpiresAt:
+              credentialRead === 1 ? Date.now() - HOUR_MS : Date.now() + 8 * HOUR_MS,
             refreshTokenExpiresAt: Date.now() + 30 * 24 * HOUR_MS,
             scopes: ['user:profile', 'user:inference'],
             subscriptionType: 'max',
