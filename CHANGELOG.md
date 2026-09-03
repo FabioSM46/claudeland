@@ -6,6 +6,17 @@ the project follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Changed
+
+- Limit the extensions.gnome.org package to GNOME Shell 45 through 50, keeping
+  the submitted JavaScript modular and removing the legacy transpilation path.
+- Use libsoup 3 directly and remove the unused libsoup 2.4 transport fallback.
+
+### Removed
+
+- The rejected GNOME Shell 42 through 44 package, its build shims, compatibility
+  UI fallbacks, and legacy container definitions.
+
 ## [0.3.0] - 2026-09-03
 
 ### Added

@@ -36,7 +36,6 @@
     "@girs/gtk-4.0": "4.2.0",
     "@girs/soup-3.0": "4.2.0",
     "@types/node": "^24.3.0",
-    "esbuild": "^0.28.2",
     "eslint": "^10.9.1",
     "gettext-parser": "^9.1.1",
     "prettier": "^3.9.6",

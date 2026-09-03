@@ -3,11 +3,10 @@
 # declares, inside disposable containers.
 #
 #   scripts/verify-shell.sh          # every declared release
-#   scripts/verify-shell.sh 42 50    # selected releases
+#   scripts/verify-shell.sh 45 50    # selected releases
 #
-# Releases before 45 load the legacy package built from the same sources; 45 and
-# later load the ES module package. Each run starts a real GNOME Shell
-# headlessly, enables the extension, and renders every panel and card state.
+# Each run starts a real GNOME Shell headlessly, enables the extension, and
+# renders every panel and card state.
 # Nothing touches the host session: the containers have no network and mock
 # logind on a private bus.
 set -euo pipefail
@@ -23,9 +22,8 @@ fi
 declared() {
   node -e "
     const fs = require('node:fs');
-    const read = (f) => JSON.parse(fs.readFileSync(f, 'utf8'))['shell-version'];
-    const all = [...read('metadata.json'), ...read('metadata-legacy.json')];
-    console.log(all.map(Number).sort((a, b) => a - b).join(' '));
+    const versions = JSON.parse(fs.readFileSync('metadata.json', 'utf8'))['shell-version'];
+    console.log(versions.map(Number).sort((a, b) => a - b).join(' '));
   "
 }
 
@@ -34,8 +32,8 @@ if [ ${#versions[@]} -eq 0 ]; then
   read -r -a versions <<< "$(declared)"
 fi
 
-if [ ! -f dist/extension.js ] || [ ! -f dist-legacy/extension.js ]; then
-  echo "dist/ or dist-legacy/ is missing; run pnpm build first" >&2
+if [ ! -f dist/extension.js ]; then
+  echo "dist/ is missing; run pnpm build first" >&2
   exit 1
 fi
 
@@ -47,13 +45,8 @@ for version in "${versions[@]}"; do
     exit 1
   fi
 
-  if [ "$version" -lt 45 ]; then
-    package="$root/dist-legacy"
-    probe="$root/dist-legacy-probe/extension.js"
-  else
-    package="$root/dist"
-    probe="$root/tests/shell/uicheck-extension.js"
-  fi
+  package="$root/dist"
+  probe="$root/tests/shell/uicheck-extension.js"
 
   image="claudeland-verify-gnome${version}"
   echo "==> Building ${image}"

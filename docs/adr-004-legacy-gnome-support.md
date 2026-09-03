@@ -1,7 +1,9 @@
 # ADR 004: Ship a second package for GNOME Shell 42 to 44
 
-- Status: accepted
+- Status: superseded
 - Date: 2026-09-03
+- Superseded: 2026-09-03, after extensions.gnome.org review recommended
+  withdrawing the legacy package
 
 ## Context
 
@@ -42,3 +44,13 @@ behind a capability check rather than a version comparison.
   to 44 does not name the source module.
 - A new dependency on esbuild, used only by the build.
 - Publishing a release means uploading two archives instead of one.
+
+## Superseding decision
+
+Claudeland now supports GNOME Shell 45 and later with one modular ES module
+package. The legacy package was rejected during extensions.gnome.org review;
+maintaining and reviewing a second, monolithic transpiled package was judged to
+cost more than the additional coverage justified. The legacy build, shims,
+libsoup 2.4 transport, old libadwaita fallbacks, and Shell 42–44 verification
+containers were removed together so no unreachable compatibility code remains
+in the modern package.

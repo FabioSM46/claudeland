@@ -32,9 +32,6 @@ importers:
       '@types/node':
         specifier: ^24.3.0
         version: 24.13.3
-      esbuild:
-        specifier: ^0.28.2
-        version: 0.28.2
       eslint:
         specifier: ^10.9.1
         version: 10.9.1
@@ -2101,6 +2098,7 @@ snapshots:
       '@esbuild/win32-arm64': 0.28.2
       '@esbuild/win32-ia32': 0.28.2
       '@esbuild/win32-x64': 0.28.2
+    optional: true
 
   escape-string-regexp@4.0.0: {}
 
