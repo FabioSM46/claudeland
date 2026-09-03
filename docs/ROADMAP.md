@@ -18,9 +18,8 @@
 ## 0.3 — Distribution
 
 - GNOME Extensions review.
-- Ubuntu package metadata.
+- Distribution package metadata.
 - Localization infrastructure and Italian/English catalogs.
-- Compatibility testing and metadata for GNOME Shell 45 and 47–50.
 
 ## Future frontends
 

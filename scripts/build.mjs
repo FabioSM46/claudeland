@@ -34,6 +34,9 @@ await writeFile(metadataPath, `${JSON.stringify(metadata, null, 2)}\n`);
 
 console.log(`Built extension in ${dist}`);
 
+// The legacy package for GNOME Shell 42 to 44 reuses the assets just produced.
+run('node', [resolve(root, 'scripts/build-legacy.mjs')]);
+
 function run(command, args) {
   const result = spawnSync(command, args, { cwd: root, stdio: 'inherit' });
   if (result.status !== 0) {

@@ -3,7 +3,7 @@
   "name": "Claudeland: Claude Usage",
   "description": "Monitor remaining Claude plan usage in the GNOME panel and an optional desktop card.\n\nShows the five-hour window, weekly limits, and dynamically discovered model limits. Requires Claude Code. Reads its local OAuth credential and sends it only to api.anthropic.com to retrieve usage. When that credential expires, the Claude Code CLI is asked to renew it; signing in always happens in Claude Code. Unofficial and not affiliated with Anthropic.",
   "version-name": "0.2.0",
-  "shell-version": ["46", "50"],
+  "shell-version": ["45", "46", "47", "48", "49", "50"],
   "gettext-domain": "claudeland",
   "settings-schema": "org.gnome.shell.extensions.claudeland",
   "url": "https://github.com/FabioSM46/claudeland"

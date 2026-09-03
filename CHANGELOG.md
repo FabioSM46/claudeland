@@ -6,6 +6,32 @@ the project follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- Support for GNOME Shell 42, 43 and 44. Those releases predate the ES module
+  extension API introduced in Shell 45, so the build now produces a second
+  package from the same sources, bundled as legacy scripts. `pnpm dev:install`
+  installs whichever package matches the running Shell, and `pnpm package`
+  produces both archives.
+- Compatibility metadata for GNOME Shell 45, 47, 48 and 49, completing the
+  supported range from 42 to 50.
+- Container definitions and verification runs for every newly declared release,
+  so all nine are exercised against a real headless Shell.
+- A blank line between functions and classes in the packaged JavaScript, as the
+  extensions.gnome.org review asks for. The TypeScript sources already complied;
+  the emitters dropped those lines, and `scripts/format-output.mjs` restores
+  them in both packages.
+- A libsoup 2.4 fallback for the usage request. Ubuntu 22.04, which carries
+  GNOME Shell 42, installs no libsoup 3 introspection data by default.
+- A libadwaita fallback for the preferences rows, which are built from an
+  `Adw.ActionRow` and a `Gtk` control on libadwaita older than 1.4.
+
+### Changed
+
+- Documentation no longer describes Claudeland as Ubuntu- or Wayland-specific.
+  It runs on any distribution shipping a supported GNOME Shell, under X11 and
+  Wayland alike.
+
 ## [0.2.0] - 2026-08-30
 
 ### Added

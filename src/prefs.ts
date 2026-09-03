@@ -141,14 +141,32 @@ export default class ClaudelandPreferences extends ExtensionPreferences {
   }
 }
 
+// Probing through an index signature keeps the check from narrowing Adw to
+// `never`: the bundled typings always describe the newest libadwaita.
+function hasWidget(name: string): boolean {
+  return name in (Adw as unknown as Record<string, unknown>);
+}
+
+// libadwaita gained SwitchRow and SpinRow in 1.4. GNOME Shell 42, 43 and 44
+// ship libadwaita 1.1 to 1.3, so build the same rows out of an ActionRow with a
+// Gtk control in the suffix when the dedicated widgets are unavailable.
 function boundSwitch(
   settings: Gio.Settings,
   key: string,
   title: string,
   subtitle: string,
-): Adw.SwitchRow {
-  const row = new Adw.SwitchRow({ title, subtitle });
-  settings.bind(key, row, 'active', Gio.SettingsBindFlags.DEFAULT);
+): Adw.ActionRow {
+  if (hasWidget('SwitchRow')) {
+    const row = new Adw.SwitchRow({ title, subtitle });
+    settings.bind(key, row, 'active', Gio.SettingsBindFlags.DEFAULT);
+    return row;
+  }
+
+  const row = new Adw.ActionRow({ title, subtitle });
+  const toggle = new Gtk.Switch({ valign: Gtk.Align.CENTER });
+  settings.bind(key, toggle, 'active', Gio.SettingsBindFlags.DEFAULT);
+  row.add_suffix(toggle);
+  row.activatable_widget = toggle;
   return row;
 }
 
@@ -160,15 +178,25 @@ function boundSpin(
   lower: number,
   upper: number,
   step: number,
-): Adw.SpinRow {
+): Adw.ActionRow {
   const adjustment = new Gtk.Adjustment({
     lower,
     upper,
     step_increment: step,
     page_increment: step * 5,
   });
-  const row = new Adw.SpinRow({ title, subtitle, adjustment, digits: 0 });
+
+  if (hasWidget('SpinRow')) {
+    const row = new Adw.SpinRow({ title, subtitle, adjustment, digits: 0 });
+    settings.bind(key, adjustment, 'value', Gio.SettingsBindFlags.DEFAULT);
+    return row;
+  }
+
+  const row = new Adw.ActionRow({ title, subtitle });
+  const spin = new Gtk.SpinButton({ adjustment, digits: 0, valign: Gtk.Align.CENTER });
   settings.bind(key, adjustment, 'value', Gio.SettingsBindFlags.DEFAULT);
+  row.add_suffix(spin);
+  row.activatable_widget = spin;
   return row;
 }
 
