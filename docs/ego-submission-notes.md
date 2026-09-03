@@ -97,6 +97,20 @@ for GNOME Shell 45 through 50 (`metadata.json`), and a legacy package for GNOME
 Shell 42, 43 and 44 (`metadata-legacy.json`), which predate the ES module
 extension API. See ADR 004 for the rationale and the build.
 
+### Why extension.js is a single file in the legacy archive
+
+The legacy archive is not obfuscated and not minified. GNOME Shell 42 to 44 load
+extension.js as a plain script through the `imports` object, which cannot
+evaluate the ES module sources or their relative imports, so the same TypeScript
+is bundled into one readable script per entry point by
+`scripts/build-legacy.mjs`. Every `gi://` and `resource://` import is rewritten
+to its `imports` equivalent through the shims in `scripts/legacy/shims`, which
+are short and reviewable on their own.
+
+The ES module archive keeps the ordinary per-module layout. Both archives are
+built from the same sources by `pnpm package`, and the repository linked in
+metadata.json contains the build, the shims and the verification harness.
+
 Every declared release is verified with `pnpm verify:shell`, which starts a real
 headless GNOME Shell in a disposable container, installs the package that
 release would actually receive, and checks that the extension:

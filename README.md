@@ -19,7 +19,7 @@ It displays remaining capacity for:
 
 ## Status
 
-The project is at `0.2.0` and targets GNOME Shell 42 through 50, under X11
+The project is at `0.3.0` and targets GNOME Shell 42 through 50, under X11
 and Wayland alike. Compatibility is checked against GNOME Shell 50 type
 definitions, and every declared release is exercised by a runtime verification
 run against a real headless Shell.
@@ -67,18 +67,25 @@ your credential.
 
 ## Install the release
 
-Download these two assets from the
-[v0.2.0 release](https://github.com/FabioSM46/claudeland/releases/tag/v0.2.0):
-
-- `claudeland@fabiosm46.dev.shell-extension.zip`;
-- `claudeland@fabiosm46.dev.shell-extension.zip.sha256`.
-
-In a terminal, change to the download directory, verify the archive, and
-install it for the current user:
+The release carries one archive per extension API. Check which one you need:
 
 ```bash
-sha256sum --check claudeland@fabiosm46.dev.shell-extension.zip.sha256
-gnome-extensions install --force claudeland@fabiosm46.dev.shell-extension.zip
+gnome-shell --version
+```
+
+GNOME Shell 45 and later use `claudeland@fabiosm46.dev.shell-extension.zip`;
+GNOME Shell 42, 43 and 44 use
+`claudeland@fabiosm46.dev.legacy.shell-extension.zip`. Both install the same
+extension and differ only in the API they are built against.
+
+Download that archive and its `.sha256` companion from the
+[v0.3.0 release](https://github.com/FabioSM46/claudeland/releases/tag/v0.3.0),
+then, in the download directory, verify and install it for the current user:
+
+```bash
+ARCHIVE=claudeland@fabiosm46.dev.shell-extension.zip   # or the .legacy. one
+sha256sum --check "$ARCHIVE.sha256"
+gnome-extensions install --force "$ARCHIVE"
 ```
 
 Log out and back in after the first installation, then enable it:
