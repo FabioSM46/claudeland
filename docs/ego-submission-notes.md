@@ -91,11 +91,17 @@ to remain open until authentication finishes, even if the extension is disabled.
 
 ## Supported releases and how they were verified
 
-`metadata.json` declares GNOME Shell 46 and 50. Both are verified with
-`pnpm verify:shell`, which for each release starts a real headless GNOME Shell
-in a disposable container and checks that the extension:
+Claudeland is submitted as two archives built from one source tree, carrying the
+same uuid and version and declaring disjoint Shell ranges: the ES module package
+for GNOME Shell 45 through 50 (`metadata.json`), and a legacy package for GNOME
+Shell 42, 43 and 44 (`metadata-legacy.json`), which predate the ES module
+extension API. See ADR 004 for the rationale and the build.
 
-- reaches the `ACTIVE` state and survives a disable/enable cycle with an empty
+Every declared release is verified with `pnpm verify:shell`, which starts a real
+headless GNOME Shell in a disposable container, installs the package that
+release would actually receive, and checks that the extension:
+
+- reaches the active state and survives a disable/enable cycle with an empty
   journal;
 - opens its preferences dialog, which runs in a separate GTK process against a
   different library stack;

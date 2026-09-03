@@ -1,7 +1,8 @@
 # Claudeland
 
-Claudeland is a GNOME Shell extension for Ubuntu Wayland that keeps Claude plan
-capacity visible without placing an always-on-top application over your work.
+Claudeland is a GNOME Shell extension that keeps Claude plan capacity visible
+without placing an always-on-top application over your work. It runs on any
+distribution shipping a supported GNOME Shell, under both X11 and Wayland.
 It is an independent project and is not affiliated with or endorsed by Anthropic.
 
 It displays remaining capacity for:
@@ -18,16 +19,24 @@ It displays remaining capacity for:
 
 ## Status
 
-The project is at `0.2.0` and targets GNOME Shell 46 and 50. Compatibility is
-checked against GNOME Shell 50 type definitions, with runtime smoke tests on
-both declared Shell releases.
+The project is at `0.2.0` and targets GNOME Shell 42 through 50, under X11
+and Wayland alike. Compatibility is checked against GNOME Shell 50 type
+definitions, and every declared release is exercised by a runtime verification
+run against a real headless Shell.
+
+GNOME Shell 45 replaced the extension API with ES modules, so Claudeland ships
+two packages built from the same sources: the ES module package for Shell 45 and
+later, and a legacy package for Shell 42 to 44. `pnpm dev:install` picks the
+right one for the running Shell, and extensions.gnome.org serves whichever
+matches the visitor's release.
 
 ## Why a GNOME extension?
 
-Wayland intentionally prevents ordinary applications from controlling their
-global position and stacking order. A GTK, Qt, Electron, or Tauri window cannot
-reliably behave like a desktop widget below every application on stock GNOME.
-Claudeland therefore integrates with GNOME Shell directly:
+GNOME does not let ordinary applications control their global position and
+stacking order, and Wayland enforces that by design. A GTK, Qt, Electron, or
+Tauri window cannot reliably behave like a desktop widget below every
+application on stock GNOME. Claudeland therefore integrates with GNOME Shell
+directly:
 
 - the panel indicator is the stable default;
 - the optional desktop card is placed in GNOME's background actor group and is
@@ -35,8 +44,8 @@ Claudeland therefore integrates with GNOME Shell directly:
 
 ## Requirements
 
-- Ubuntu or another GNOME distribution using GNOME Shell 46 or 50;
-- Wayland or X11 (Wayland is the primary target);
+- any distribution using GNOME Shell 42 through 50;
+- an X11 or a Wayland session; both are supported;
 - Claude Code installed and available as `claude` in `PATH`;
 - a Claude subscription authenticated through Claude Code;
 - Git, Node.js 20.19+, and pnpm 9+ when installing from source.
@@ -79,7 +88,8 @@ gnome-extensions enable claudeland@fabiosm46.dev
 ```
 
 On X11, GNOME Shell can instead be restarted with `Alt+F2`, `r`, Enter. That
-restart shortcut is intentionally unavailable on Wayland.
+restart shortcut is intentionally unavailable on Wayland, where logging out and
+back in is the only way to reload the Shell.
 
 Verify the installation and open preferences with:
 
@@ -118,7 +128,8 @@ pnpm install --frozen-lockfile
 pnpm dev:install
 ```
 
-Log out and back in to reload the updated extension on Wayland.
+Log out and back in to reload the updated extension. On X11 the Shell can
+instead be restarted with `Alt+F2`, `r`, Enter.
 
 ## Uninstall
 
@@ -131,7 +142,7 @@ gnome-extensions uninstall claudeland@fabiosm46.dev
 
 | Command               | Purpose                                                          |
 | --------------------- | ---------------------------------------------------------------- |
-| `pnpm build`          | Transpile GJS code and copy extension assets                     |
+| `pnpm build`          | Build the ES module and legacy packages and copy assets          |
 | `pnpm check`          | Check formatting, lint, typecheck, test, and build               |
 | `pnpm format`         | Format supported source and documentation files with Prettier    |
 | `pnpm test`           | Run parser/domain unit tests                                     |
@@ -139,21 +150,23 @@ gnome-extensions uninstall claudeland@fabiosm46.dev
 | `pnpm verify:session` | Exercise credential reading and session renewal under GJS        |
 | `pnpm verify:shell`   | Verify the built extension on every declared GNOME Shell release |
 | `pnpm dev:install`    | Build and install into the user extension directory              |
-| `pnpm package`        | Produce an extension ZIP and SHA-256 checksum in `build/`        |
-| `pnpm clean`          | Remove generated `dist/`, `build/`, and `coverage/`              |
+| `pnpm package`        | Produce both extension ZIPs and SHA-256 checksums in `build/`    |
+| `pnpm clean`          | Remove every generated build directory                           |
 
 ## Testing the UI
 
-Every GNOME Shell release declared in `metadata.json` is verified in a
-disposable container, so a second desktop is not needed:
+Every GNOME Shell release declared in `metadata.json` and `metadata-legacy.json`
+is verified in a disposable container, so a second desktop is not needed:
 
 ```bash
 pnpm build && pnpm verify:shell        # every declared release
-pnpm verify:shell 50                   # one release
+pnpm verify:shell 42 50                # selected releases
 ```
 
-For each release this starts a real headless GNOME Shell, enables the packaged
-extension, checks that it becomes `ACTIVE`, survives a disable/enable cycle,
+Each release is verified against the package it would actually receive: the
+legacy package below Shell 45, the ES module package from 45 up. For each
+release this starts a real headless GNOME Shell, enables the packaged
+extension, checks that it becomes active, survives a disable/enable cycle,
 and leaves the journal clean, opens the preferences dialog in its own GTK
 process, then renders every panel and card state through a throwaway probe
 extension (`tests/shell/uicheck-extension.js`). The containers

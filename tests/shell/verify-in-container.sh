@@ -26,7 +26,7 @@ python3 -m dbusmock --system --template logind > /tmp/logind.log 2>&1 &
 sleep 3
 
 mkdir -p "$EXT_DIR/$UUID"
-cp -r /home/tester/dist/. "$EXT_DIR/$UUID/"
+cp -r /home/tester/package/. "$EXT_DIR/$UUID/"
 glib-compile-schemas "$EXT_DIR/$UUID/schemas"
 rm -f "$EXT_DIR/$UUID/session-check.js" "$EXT_DIR/$UUID/smoke-test.js"
 
@@ -62,6 +62,22 @@ start_shell() {
   sleep 5
 }
 
+# Errors GNOME Shell itself raises in a container, with no bearing on the
+# extension under test. Keep this list minimal and exact.
+#
+# - GNOME Shell 42's network indicator dereferences its NetworkManager proxy
+#   before it exists when NetworkManager is absent, as it is here.
+shell_errors() {
+  grep -iE "JS ERROR|JS WARNING" /tmp/shell.log |
+    grep -v "TypeError: this._managerProxy is undefined" || true
+}
+
+# GNOME Shell renamed the enabled extension state from ENABLED to ACTIVE in
+# release 44.
+is_active() {
+  [ "$1" = "ACTIVE" ] || [ "$1" = "ENABLED" ]
+}
+
 stop_shell() {
   for pid in $WINDOW_PIDS; do
     kill "$pid" 2>/dev/null || true
@@ -85,25 +101,28 @@ echo "### $(gnome-shell --version) · $(gjs --version | head -1)"
 
 echo
 echo "=== phase 0: domain and services under this GJS ==="
-gjs -m /home/tester/dist/smoke-test.js || STATUS=1
-gjs -m /home/tester/dist/session-check.js || STATUS=1
+# Always the ES module build: these harnesses are run by gjs directly rather
+# than by the Shell, so they exercise the domain and services on this GJS
+# release regardless of which package the Shell itself loads.
+gjs -m /home/tester/modern/smoke-test.js || STATUS=1
+gjs -m /home/tester/modern/session-check.js || STATUS=1
 
 echo
 echo "=== phase 1: the extension itself ==="
 start_shell "$UUID"
 STATE=$(gnome-extensions info "$UUID" 2>/dev/null | sed -n 's/^  State: //p')
 echo "state after startup: ${STATE:-unknown}"
-[ "$STATE" = "ACTIVE" ] || STATUS=1
+is_active "$STATE" || STATUS=1
 gnome-extensions disable "$UUID" >/dev/null 2>&1 || true
 sleep 2
 gnome-extensions enable "$UUID" >/dev/null 2>&1 || true
 sleep 3
 STATE=$(gnome-extensions info "$UUID" 2>/dev/null | sed -n 's/^  State: //p')
 echo "state after a disable/enable cycle: ${STATE:-unknown}"
-[ "$STATE" = "ACTIVE" ] || STATUS=1
-if grep -qiE "JS ERROR|JS WARNING" /tmp/shell.log; then
+is_active "$STATE" || STATUS=1
+if shell_errors > /tmp/errors.log && [ -s /tmp/errors.log ]; then
   echo "unexpected shell errors:"
-  grep -iE "JS ERROR|JS WARNING" /tmp/shell.log
+  cat /tmp/errors.log
   STATUS=1
 else
   echo "no JS errors or warnings in the journal"

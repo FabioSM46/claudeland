@@ -10,6 +10,7 @@ import {
 } from '../domain/usage.js';
 import type { ClaudeCredential } from '../domain/credential.js';
 import { ClaudelandError } from './errors.js';
+import { sendAndRead } from './soup-transport.js';
 
 const USAGE_URL = 'https://api.anthropic.com/api/oauth/usage';
 const OAUTH_BETA = 'oauth-2025-04-20';
@@ -93,18 +94,6 @@ export class ClaudeUsageClient {
 export interface UsageFetchResult {
   snapshot: UsageSnapshot;
   planLabel: string;
-}
-
-function sendAndRead(session: Soup.Session, message: Soup.Message): Promise<GLib.Bytes> {
-  return new Promise((resolve, reject) => {
-    session.send_and_read_async(message, GLib.PRIORITY_DEFAULT, null, (source, result) => {
-      try {
-        resolve(source!.send_and_read_finish(result));
-      } catch (error) {
-        reject(error);
-      }
-    });
-  });
 }
 
 function parseRetryAfter(message: Soup.Message): number | null {
