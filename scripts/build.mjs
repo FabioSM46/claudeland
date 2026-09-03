@@ -37,6 +37,10 @@ console.log(`Built extension in ${dist}`);
 // The legacy package for GNOME Shell 42 to 44 reuses the assets just produced.
 run('node', [resolve(root, 'scripts/build-legacy.mjs')]);
 
+// Both packages ship JavaScript a reviewer reads, so restore the blank lines
+// the emitters dropped.
+run('node', [resolve(root, 'scripts/format-output.mjs')]);
+
 function run(command, args) {
   const result = spawnSync(command, args, { cwd: root, stdio: 'inherit' });
   if (result.status !== 0) {

@@ -16,7 +16,7 @@
     "check": "pnpm format:check && pnpm lint && pnpm typecheck && pnpm test && pnpm build",
     "clean": "node scripts/clean.mjs",
     "dev:install": "node scripts/install.mjs",
-    "format": "prettier --write .",
+    "format": "prettier --write . && eslint --fix .",
     "format:check": "prettier --check .",
     "lint": "eslint .",
     "package": "pnpm build && node scripts/pack.mjs",

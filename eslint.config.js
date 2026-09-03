@@ -1,6 +1,8 @@
 import eslint from '@eslint/js';
 import tseslint from 'typescript-eslint';
 
+import { PADDING_RULES } from './scripts/padding-rules.mjs';
+
 export default tseslint.config(
   {
     ignores: [
@@ -15,6 +17,13 @@ export default tseslint.config(
   },
   eslint.configs.recommended,
   ...tseslint.configs.recommended,
+  {
+    // The extensions.gnome.org review asks for a blank line between functions
+    // and classes. The same rules are applied to the generated packages by
+    // scripts/format-output.mjs, which is what a reviewer actually reads.
+    files: ['**/*.{js,mjs,ts}'],
+    rules: PADDING_RULES,
+  },
   {
     files: ['src/**/*.ts'],
     languageOptions: {
