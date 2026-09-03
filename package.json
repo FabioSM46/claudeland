@@ -1,6 +1,6 @@
 {
   "name": "claudeland",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "GNOME Shell extension for remaining Claude plan usage",
   "type": "module",
   "private": true,
