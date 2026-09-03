@@ -19,16 +19,10 @@ It displays remaining capacity for:
 
 ## Status
 
-The project is at `0.3.0` and targets GNOME Shell 42 through 50, under X11
+The project is at `0.3.0` and targets GNOME Shell 45 through 50, under X11
 and Wayland alike. Compatibility is checked against GNOME Shell 50 type
 definitions, and every declared release is exercised by a runtime verification
 run against a real headless Shell.
-
-GNOME Shell 45 replaced the extension API with ES modules, so Claudeland ships
-two packages built from the same sources: the ES module package for Shell 45 and
-later, and a legacy package for Shell 42 to 44. `pnpm dev:install` picks the
-right one for the running Shell, and extensions.gnome.org serves whichever
-matches the visitor's release.
 
 ## Why a GNOME extension?
 
@@ -44,7 +38,7 @@ directly:
 
 ## Requirements
 
-- any distribution using GNOME Shell 42 through 50;
+- any distribution using GNOME Shell 45 through 50;
 - an X11 or a Wayland session; both are supported;
 - Claude Code installed and available as `claude` in `PATH`;
 - a Claude subscription authenticated through Claude Code;
@@ -67,23 +61,13 @@ your credential.
 
 ## Install the release
 
-The release carries one archive per extension API. Check which one you need:
-
-```bash
-gnome-shell --version
-```
-
-GNOME Shell 45 and later use `claudeland@fabiosm46.dev.shell-extension.zip`;
-GNOME Shell 42, 43 and 44 use
-`claudeland@fabiosm46.dev.legacy.shell-extension.zip`. Both install the same
-extension and differ only in the API they are built against.
-
-Download that archive and its `.sha256` companion from the
+Download `claudeland@fabiosm46.dev.shell-extension.zip` and its `.sha256`
+companion from the
 [v0.3.0 release](https://github.com/FabioSM46/claudeland/releases/tag/v0.3.0),
 then, in the download directory, verify and install it for the current user:
 
 ```bash
-ARCHIVE=claudeland@fabiosm46.dev.shell-extension.zip   # or the .legacy. one
+ARCHIVE=claudeland@fabiosm46.dev.shell-extension.zip
 sha256sum --check "$ARCHIVE.sha256"
 gnome-extensions install --force "$ARCHIVE"
 ```
@@ -149,7 +133,7 @@ gnome-extensions uninstall claudeland@fabiosm46.dev
 
 | Command               | Purpose                                                          |
 | --------------------- | ---------------------------------------------------------------- |
-| `pnpm build`          | Build the ES module and legacy packages and copy assets          |
+| `pnpm build`          | Build the ES module package and copy its runtime assets          |
 | `pnpm check`          | Check formatting, lint, typecheck, test, and build               |
 | `pnpm format`         | Format supported source and documentation files with Prettier    |
 | `pnpm test`           | Run parser/domain unit tests                                     |
@@ -157,28 +141,26 @@ gnome-extensions uninstall claudeland@fabiosm46.dev
 | `pnpm verify:session` | Exercise credential reading and session renewal under GJS        |
 | `pnpm verify:shell`   | Verify the built extension on every declared GNOME Shell release |
 | `pnpm dev:install`    | Build and install into the user extension directory              |
-| `pnpm package`        | Produce both extension ZIPs and SHA-256 checksums in `build/`    |
+| `pnpm package`        | Produce the extension ZIP and SHA-256 checksum in `build/`       |
 | `pnpm clean`          | Remove every generated build directory                           |
 
 ## Testing the UI
 
-Every GNOME Shell release declared in `metadata.json` and `metadata-legacy.json`
-is verified in a disposable container, so a second desktop is not needed:
+Every GNOME Shell release declared in `metadata.json` is verified in a
+disposable container, so a second desktop is not needed:
 
 ```bash
 pnpm build && pnpm verify:shell        # every declared release
-pnpm verify:shell 42 50                # selected releases
+pnpm verify:shell 45 50                # selected releases
 ```
 
-Each release is verified against the package it would actually receive: the
-legacy package below Shell 45, the ES module package from 45 up. For each
-release this starts a real headless GNOME Shell, enables the packaged
-extension, checks that it becomes active, survives a disable/enable cycle,
-and leaves the journal clean, opens the preferences dialog in its own GTK
-process, then renders every panel and card state through a throwaway probe
-extension (`tests/shell/uicheck-extension.js`). The containers
-have no network access and mock logind on a private bus, so nothing outside the
-container is touched. Docker is the only requirement.
+For each release this starts a real headless GNOME Shell, enables the packaged
+extension, checks that it becomes active, survives a disable/enable cycle, and
+leaves the journal clean, opens the preferences dialog in its own GTK process,
+then renders every panel and card state through a throwaway probe extension
+(`tests/shell/uicheck-extension.js`). The containers have no network access and
+mock logind on a private bus, so nothing outside the container is touched.
+Docker is the only requirement.
 
 To drive the real UI by hand, GNOME 48 and older can run a nested Wayland
 shell:

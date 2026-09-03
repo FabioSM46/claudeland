@@ -13,12 +13,8 @@ and dynamically discovered model-scoped limits.
   targets.
 - Use `pnpm` for dependency and script management.
 - Run `pnpm check` before committing.
-- Keep one source tree. GNOME Shell 42 to 44 are served by a second package
-  bundled from the same sources by `scripts/build-legacy.mjs` (ADR 004); never
-  fork a module per Shell release.
-- Resolve a legacy API difference in `scripts/legacy/shims/` when it is purely
-  an import path, and in the sources behind a capability check when it is a
-  runtime difference. Never branch on a GNOME Shell version number.
+- Support GNOME Shell 45 and later with one ES module package. Resolve runtime
+  differences behind capability checks; never branch on a Shell version number.
 - Keep pure data normalization in `src/domain/`; it must remain runnable under
   Node and covered by unit tests.
 - Keep GNOME-specific imports out of `src/domain/`.
@@ -68,10 +64,8 @@ and dynamically discovered model-scoped limits.
   after a failure.
 - New response shapes have fixtures and parser tests.
 - GNOME Shell version metadata matches versions actually tested. Every release
-  declared in `metadata.json` and `metadata-legacy.json` passes
-  `pnpm verify:shell`, and a newly declared release has a container definition
-  in `tests/shell/`.
-- A new `gi://` or `resource://` import has a matching legacy shim, and a new
-  GNOME or libadwaita API is guarded by a capability check when it postdates the
-  oldest declared Shell release.
+  declared in `metadata.json` passes `pnpm verify:shell`, and a newly declared
+  release has a container definition in `tests/shell/`.
+- A new GNOME or libadwaita API is guarded by a capability check when it
+  postdates the oldest declared Shell release.
 - User-facing percentages are remaining capacity, not consumed capacity.

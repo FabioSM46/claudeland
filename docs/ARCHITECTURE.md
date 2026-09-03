@@ -74,29 +74,12 @@ order. No actor, signal, or GLib timer may survive `disable()`.
 ## Compatibility
 
 GNOME Shell code is compiled against GNOME 50 type definitions and supports
-Shell 42 through 50, under X11 and Wayland alike. Compatibility-
-sensitive code uses APIs available in every declared release, and each of them
-must be verified with `pnpm verify:shell` before publication.
+Shell 45 through 50, under X11 and Wayland alike. The package uses the ES module
+extension API introduced in Shell 45. Compatibility-sensitive code uses APIs
+available in every declared release, and each of them must be verified with
+`pnpm verify:shell` before publication.
 
-### Two packages, one source tree
-
-GNOME Shell 45 replaced the extension API with ES modules. Rather than fork the
-sources, `scripts/build-legacy.mjs` bundles the same TypeScript into one legacy
-script per entry point, resolving each `gi://` and `resource://` import to its
-`imports` equivalent through the shims in `scripts/legacy/shims`. The shims are
-the only place that knows about the legacy API, and each one re-exports exactly
-the members the sources use, so an import that has no legacy equivalent fails
-the build instead of failing at runtime on a user's session.
-
-Three runtime differences could not be resolved at build time and are handled in
-the sources themselves:
+One runtime difference is handled in the sources:
 
 - `St.BoxLayout` gained an `orientation` property after Shell 46, so
   `src/ui/compat.ts` sets `vertical` when it is absent.
-- libadwaita gained `SwitchRow` and `SpinRow` in 1.4, which Shell 42 to 44
-  predate, so `src/prefs.ts` falls back to an `Adw.ActionRow` carrying a `Gtk`
-  control.
-- GNOME Shell moved to libsoup 3 in release 43, and Ubuntu 22.04 installs only
-  the libsoup 2.4 typelib, so `scripts/legacy/shims/gi-soup.js` prefers libsoup
-  3 and falls back to 2.4, and `src/services/soup-transport.ts` isolates the one
-  API that differs between them.

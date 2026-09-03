@@ -1,10 +1,8 @@
-// Restores blank lines between top-level functions and classes in the built
-// packages.
+// Restores blank lines between top-level functions and classes in the build.
 //
 // The extensions.gnome.org review asks for a blank line between functions and
 // classes, and it reads the JavaScript that ships, not the TypeScript sources.
 // The sources already comply, but tsc drops those blank lines when it emits and
-// esbuild does not reproduce them either. Prettier cannot help: it preserves
 // blank lines and never inserts them. ESLint can, so the packaged output is
 // passed through the same padding rules the sources are linted with.
 import { readdir } from 'node:fs/promises';
@@ -23,10 +21,7 @@ const eslint = new ESLint({
   ignore: false,
 });
 
-const targets = [];
-for (const directory of ['dist', 'dist-legacy']) {
-  targets.push(...(await javascriptFiles(resolve(root, directory))));
-}
+const targets = await javascriptFiles(resolve(root, 'dist'));
 
 const results = await eslint.lintFiles(targets);
 await ESLint.outputFixes(results);

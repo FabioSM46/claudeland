@@ -5,15 +5,7 @@ import { PADDING_RULES } from './scripts/padding-rules.mjs';
 
 export default tseslint.config(
   {
-    ignores: [
-      'build/**',
-      'coverage/**',
-      'dist/**',
-      'dist-legacy/**',
-      'dist-legacy-probe/**',
-      'graphify-out/**',
-      'node_modules/**',
-    ],
+    ignores: ['build/**', 'coverage/**', 'dist/**', 'graphify-out/**', 'node_modules/**'],
   },
   eslint.configs.recommended,
   ...tseslint.configs.recommended,
@@ -56,16 +48,6 @@ export default tseslint.config(
         ARGV: 'readonly',
         console: 'readonly',
         global: 'readonly',
-      },
-    },
-  },
-  {
-    // Legacy-build shims, bundled into the GNOME Shell 42 to 44 package and
-    // evaluated by gjs rather than by Node.
-    files: ['scripts/legacy/shims/**/*.js'],
-    languageOptions: {
-      globals: {
-        imports: 'readonly',
       },
     },
   },

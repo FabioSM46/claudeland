@@ -1,5 +1,5 @@
 import GLib from 'gi://GLib';
-import Soup from 'gi://Soup';
+import Soup from 'gi://Soup?version=3.0';
 
 import {
   InvalidUsagePayloadError,
@@ -10,7 +10,6 @@ import {
 } from '../domain/usage.js';
 import type { ClaudeCredential } from '../domain/credential.js';
 import { ClaudelandError } from './errors.js';
-import { sendAndRead } from './soup-transport.js';
 
 const USAGE_URL = 'https://api.anthropic.com/api/oauth/usage';
 const OAUTH_BETA = 'oauth-2025-04-20';
@@ -103,4 +102,16 @@ function parseRetryAfter(message: Soup.Message): number | null {
   }
   const seconds = Number.parseInt(header, 10);
   return Number.isFinite(seconds) && seconds > 0 ? seconds : null;
+}
+
+function sendAndRead(session: Soup.Session, message: Soup.Message): Promise<GLib.Bytes> {
+  return new Promise((resolve, reject) => {
+    session.send_and_read_async(message, GLib.PRIORITY_DEFAULT, null, (source, result) => {
+      try {
+        resolve(source!.send_and_read_finish(result));
+      } catch (error) {
+        reject(error);
+      }
+    });
+  });
 }

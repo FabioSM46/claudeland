@@ -16,53 +16,35 @@ if (metadata['version-name'] !== packageMetadata.version) {
   process.exit(1);
 }
 
-// Both packages carry the same uuid and version: extensions.gnome.org serves
-// whichever one matches the visitor's GNOME Shell release.
-const targets = [
-  {
-    source: resolve(root, 'dist'),
-    archive: `${metadata.uuid}.shell-extension.zip`,
-    extraSources: ['LICENSE', 'domain', 'locale', 'services', 'ui'],
-  },
-  {
-    source: resolve(root, 'dist-legacy'),
-    archive: `${metadata.uuid}.legacy.shell-extension.zip`,
-    extraSources: ['LICENSE', 'locale'],
-  },
-];
-
 await rm(build, { recursive: true, force: true });
 await mkdir(build, { recursive: true });
 
-for (const target of targets) {
-  const staging = resolve(build, 'staging');
-  await rm(staging, { recursive: true, force: true });
-  await mkdir(staging, { recursive: true });
+const staging = resolve(build, 'staging');
+await mkdir(staging, { recursive: true });
 
-  run('gnome-extensions', [
-    'pack',
-    '--force',
-    '--out-dir',
-    staging,
-    ...target.extraSources.map((source) => `--extra-source=${source}`),
-    target.source,
-  ]);
+run('gnome-extensions', [
+  'pack',
+  '--force',
+  '--out-dir',
+  staging,
+  ...['LICENSE', 'domain', 'locale', 'services', 'ui'].map((source) => `--extra-source=${source}`),
+  resolve(root, 'dist'),
+]);
 
-  const archive = resolve(build, target.archive);
-  await rename(resolve(staging, `${metadata.uuid}.shell-extension.zip`), archive);
-  await rm(staging, { recursive: true, force: true });
+const archive = resolve(build, `${metadata.uuid}.shell-extension.zip`);
+await rename(resolve(staging, `${metadata.uuid}.shell-extension.zip`), archive);
+await rm(staging, { recursive: true, force: true });
 
-  verifyArchive(archive);
+verifyArchive(archive);
 
-  const checksum = createHash('sha256')
-    .update(await readFile(archive))
-    .digest('hex');
-  const checksumPath = `${archive}.sha256`;
-  await writeFile(checksumPath, `${checksum}  ${basename(archive)}\n`);
+const checksum = createHash('sha256')
+  .update(await readFile(archive))
+  .digest('hex');
+const checksumPath = `${archive}.sha256`;
+await writeFile(checksumPath, `${checksum}  ${basename(archive)}\n`);
 
-  console.log(`Packed and verified extension in ${archive}`);
-  console.log(`Wrote SHA-256 checksum to ${checksumPath}`);
-}
+console.log(`Packed and verified extension in ${archive}`);
+console.log(`Wrote SHA-256 checksum to ${checksumPath}`);
 
 function verifyArchive(archive) {
   let listing = run('unzip', ['-Z1', archive], true).stdout.trim().split('\n');

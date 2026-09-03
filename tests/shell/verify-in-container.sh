@@ -28,7 +28,6 @@ sleep 3
 mkdir -p "$EXT_DIR/$UUID"
 cp -r /home/tester/package/. "$EXT_DIR/$UUID/"
 glib-compile-schemas "$EXT_DIR/$UUID/schemas"
-rm -f "$EXT_DIR/$UUID/session-check.js" "$EXT_DIR/$UUID/smoke-test.js"
 
 # The probe is a copy of the extension with a different entry point. Both
 # cannot run in one session: GObject type names are derived from the module
@@ -65,17 +64,12 @@ start_shell() {
 # Errors GNOME Shell itself raises in a container, with no bearing on the
 # extension under test. Keep this list minimal and exact.
 #
-# - GNOME Shell 42's network indicator dereferences its NetworkManager proxy
-#   before it exists when NetworkManager is absent, as it is here.
 shell_errors() {
-  grep -iE "JS ERROR|JS WARNING" /tmp/shell.log |
-    grep -v "TypeError: this._managerProxy is undefined" || true
+  grep -iE "JS ERROR|JS WARNING" /tmp/shell.log || true
 }
 
-# GNOME Shell renamed the enabled extension state from ENABLED to ACTIVE in
-# release 44.
 is_active() {
-  [ "$1" = "ACTIVE" ] || [ "$1" = "ENABLED" ]
+  [ "$1" = "ACTIVE" ]
 }
 
 stop_shell() {
@@ -101,9 +95,7 @@ echo "### $(gnome-shell --version) · $(gjs --version | head -1)"
 
 echo
 echo "=== phase 0: domain and services under this GJS ==="
-# Always the ES module build: these harnesses are run by gjs directly rather
-# than by the Shell, so they exercise the domain and services on this GJS
-# release regardless of which package the Shell itself loads.
+# These harnesses are run by gjs directly rather than by the Shell.
 gjs -m /home/tester/modern/smoke-test.js || STATUS=1
 gjs -m /home/tester/modern/session-check.js || STATUS=1
 
