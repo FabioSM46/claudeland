@@ -1,12 +1,29 @@
 import eslint from '@eslint/js';
 import tseslint from 'typescript-eslint';
 
+import { PADDING_RULES } from './scripts/padding-rules.mjs';
+
 export default tseslint.config(
   {
-    ignores: ['build/**', 'coverage/**', 'dist/**', 'graphify-out/**', 'node_modules/**'],
+    ignores: [
+      'build/**',
+      'coverage/**',
+      'dist/**',
+      'dist-legacy/**',
+      'dist-legacy-probe/**',
+      'graphify-out/**',
+      'node_modules/**',
+    ],
   },
   eslint.configs.recommended,
   ...tseslint.configs.recommended,
+  {
+    // The extensions.gnome.org review asks for a blank line between functions
+    // and classes. The same rules are applied to the generated packages by
+    // scripts/format-output.mjs, which is what a reviewer actually reads.
+    files: ['**/*.{js,mjs,ts}'],
+    rules: PADDING_RULES,
+  },
   {
     files: ['src/**/*.ts'],
     languageOptions: {
@@ -39,6 +56,16 @@ export default tseslint.config(
         ARGV: 'readonly',
         console: 'readonly',
         global: 'readonly',
+      },
+    },
+  },
+  {
+    // Legacy-build shims, bundled into the GNOME Shell 42 to 44 package and
+    // evaluated by gjs rather than by Node.
+    files: ['scripts/legacy/shims/**/*.js'],
+    languageOptions: {
+      globals: {
+        imports: 'readonly',
       },
     },
   },
