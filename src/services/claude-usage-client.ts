@@ -17,7 +17,7 @@ const OAUTH_BETA = 'oauth-2025-04-20';
 export class ClaudeUsageClient {
   private readonly session = new Soup.Session({
     timeout: 20,
-    user_agent: 'claudeland/0.3.0',
+    user_agent: 'claudeland/0.3.1',
   });
 
   /**
