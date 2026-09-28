@@ -11,6 +11,8 @@ the project follows [Semantic Versioning](https://semver.org/).
 - Limit the extensions.gnome.org package to GNOME Shell 45 through 50, keeping
   the submitted JavaScript modular and removing the legacy transpilation path.
 - Use libsoup 3 directly and remove the unused libsoup 2.4 transport fallback.
+- Import libsoup without a version query, as the extensions.gnome.org review
+  asks for. GNOME Shell has already loaded libsoup 3 into its own process.
 
 ### Removed
 
