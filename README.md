@@ -19,7 +19,7 @@ It displays remaining capacity for:
 
 ## Status
 
-The project is at `0.3.0` and targets GNOME Shell 45 through 50, under X11
+The project is at `0.3.1` and targets GNOME Shell 45 through 50, under X11
 and Wayland alike. Compatibility is checked against GNOME Shell 50 type
 definitions, and every declared release is exercised by a runtime verification
 run against a real headless Shell.
@@ -63,7 +63,7 @@ your credential.
 
 Download `claudeland@fabiosm46.dev.shell-extension.zip` and its `.sha256`
 companion from the
-[v0.3.0 release](https://github.com/FabioSM46/claudeland/releases/tag/v0.3.0),
+[v0.3.1 release](https://github.com/FabioSM46/claudeland/releases/tag/v0.3.1),
 then, in the download directory, verify and install it for the current user:
 
 ```bash
