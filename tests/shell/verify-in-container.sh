@@ -68,8 +68,10 @@ shell_errors() {
   grep -iE "JS ERROR|JS WARNING" /tmp/shell.log || true
 }
 
+# GNOME Shell 45 still reports the enabled extension state as ENABLED; later
+# releases call it ACTIVE.
 is_active() {
-  [ "$1" = "ACTIVE" ]
+  [ "$1" = "ACTIVE" ] || [ "$1" = "ENABLED" ]
 }
 
 stop_shell() {
